@@ -24,9 +24,27 @@ profile.cov
 go.work
 go.work.sum
 
+# Build directory
+bin/
+dist/
+build/
+
+# Configuration files (user-specific)
+.aicli.json
+.aicli_history.json
+
 # env file
 .env
+.env.*
+
+# Logs
+*.log
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

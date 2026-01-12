@@ -1,0 +1,59 @@
+{
+  "version": "1.0",
+  "llm": {
+    "provider": "openai",
+    "api_key": "your-api-key-here",
+    "api_base": "https://api.openai.com/v1",
+    "model": "gpt-4",
+    "timeout": 10,
+    "max_tokens": 500
+  },
+  "execution": {
+    "auto_confirm": false,
+    "dry_run_default": false,
+    "timeout": 30,
+    "shell": "auto"
+  },
+  "safety": {
+    "enable_checks": true,
+    "dangerous_patterns": ["rm -rf", "format", "mkfs", "dd if=", "chmod 777"],
+    "require_confirmation": true
+  },
+  "history": {
+    "enabled": true,
+    "max_entries": 1000,
+    "file": "~/.aicli_history.json"
+  },
+  "logging": {
+    "enabled": false,
+    "level": "info",
+    "file": ""
+  },
+  "_comments": {
+    "providers": "支持的 LLM 提供商配置示例",
+    "openai": {
+      "provider": "openai",
+      "api_key": "sk-...",
+      "model": "gpt-4",
+      "api_base": "https://api.openai.com/v1"
+    },
+    "anthropic": {
+      "provider": "anthropic",
+      "api_key": "sk-ant-...",
+      "model": "claude-3-sonnet-20240229",
+      "api_base": "https://api.anthropic.com/v1"
+    },
+    "local_ollama": {
+      "provider": "local",
+      "model": "llama2",
+      "api_base": "http://localhost:11434"
+    },
+    "deepseek": {
+      "provider": "openai",
+      "api_key": "sk-...",
+      "model": "deepseek-chat",
+      "api_base": "https://api.deepseek.com/v1",
+      "note": "DeepSeek 兼容 OpenAI API，使用 openai provider"
+    }
+  }
+}

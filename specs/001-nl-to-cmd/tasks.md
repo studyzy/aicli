@@ -28,12 +28,12 @@
 
 **目的**: 项目初始化和基本结构
 
-- [ ] T001 根据 plan.md 创建 Go 项目目录结构 (cmd/, pkg/, internal/, tests/, docs/)
-- [ ] T002 初始化 Go modules (go.mod), 设置模块名为 github.com/studyzy/aicli
-- [ ] T003 [P] 创建 Makefile 包含构建、测试、覆盖率检查命令
-- [ ] T004 [P] 配置 .gitignore 文件(二进制文件、配置文件、IDE文件)
-- [ ] T005 [P] 设置 GitHub Actions CI 工作流 (.github/workflows/test.yml) 验证测试覆盖率 ≥60%
-- [ ] T006 [P] 创建中文 README.md 包含项目介绍、安装和基本使用示例
+- [X] T001 根据 plan.md 创建 Go 项目目录结构 (cmd/, pkg/, internal/, tests/, docs/)
+- [X] T002 初始化 Go modules (go.mod), 设置模块名为 github.com/studyzy/aicli
+- [X] T003 [P] 创建 Makefile 包含构建、测试、覆盖率检查命令
+- [X] T004 [P] 配置 .gitignore 文件(二进制文件、配置文件、IDE文件)
+- [X] T005 [P] 设置 GitHub Actions CI 工作流 (.github/workflows/test.yml) 验证测试覆盖率 ≥60%
+- [X] T006 [P] 创建中文 README.md 包含项目介绍、安装和基本使用示例
 
 ---
 
@@ -43,20 +43,20 @@
 
 **⚠️ 关键**: 在此阶段完成之前, 无法开始任何用户故事工作
 
-- [ ] T007 在 pkg/config/config.go 中定义配置结构体(Config, LLMConfig, ExecutionConfig, SafetyConfig等)
-- [ ] T008 在 pkg/config/config.go 中实现 Load() 函数从 ~/.aicli.json 加载配置
-- [ ] T009 在 pkg/config/default.go 中定义默认配置值
-- [ ] T010 [P] 在 pkg/config/config_test.go 中编写配置加载和默认值测试
-- [ ] T011 在 pkg/llm/provider.go 中定义 LLMProvider 接口和 ExecutionContext 结构体
-- [ ] T012 在 pkg/llm/mock.go 中实现 MockLLMProvider 用于测试
-- [ ] T013 在 pkg/executor/shell.go 中定义 ShellAdapter 结构体和 ShellType 常量
-- [ ] T014 在 pkg/executor/shell.go 中实现 DetectShell() 函数检测当前系统Shell
-- [ ] T015 [P] 在 pkg/executor/executor_test.go 中编写 Shell 检测测试(跨平台)
-- [ ] T016 在 pkg/safety/patterns.go 中定义危险命令模式切片(DangerousPatterns)
-- [ ] T017 在 pkg/safety/checker.go 中实现 SafetyChecker 结构体和 IsDangerous() 方法
-- [ ] T018 [P] 在 pkg/safety/safety_test.go 中编写危险命令检测测试(确保100%准确率)
-- [ ] T019 在 cmd/aicli/main.go 中创建基础 Cobra 命令结构和根命令
-- [ ] T020 在 internal/app/flags.go 中定义命令行标志(--dry-run, --verbose, --force等)
+- [X] T007 在 pkg/config/config.go 中定义配置结构体(Config, LLMConfig, ExecutionConfig, SafetyConfig等)
+- [X] T008 在 pkg/config/config.go 中实现 Load() 函数从 ~/.aicli.json 加载配置
+- [X] T009 在 pkg/config/default.go 中定义默认配置值
+- [X] T010 [P] 在 pkg/config/config_test.go 中编写配置加载和默认值测试
+- [X] T011 在 pkg/llm/provider.go 中定义 LLMProvider 接口和 ExecutionContext 结构体
+- [X] T012 在 pkg/llm/mock.go 中实现 MockLLMProvider 用于测试
+- [X] T013 在 pkg/executor/shell.go 中定义 ShellAdapter 结构体和 ShellType 常量
+- [X] T014 在 pkg/executor/shell.go 中实现 DetectShell() 函数检测当前系统Shell
+- [X] T015 [P] 在 pkg/executor/executor_test.go 中编写 Shell 检测测试(跨平台)
+- [X] T016 在 pkg/safety/patterns.go 中定义危险命令模式切片(DangerousPatterns)
+- [X] T017 在 pkg/safety/checker.go 中实现 SafetyChecker 结构体和 IsDangerous() 方法
+- [X] T018 [P] 在 pkg/safety/safety_test.go 中编写危险命令检测测试(确保100%准确率)
+- [X] T019 在 cmd/aicli/main.go 中创建基础 Cobra 命令结构和根命令
+- [X] T020 在 internal/app/flags.go 中定义命令行标志(--dry-run, --verbose, --force等)
 
 **检查点**: 基础就绪 - 现在可以开始并行实施用户故事
 
@@ -72,22 +72,22 @@
 
 **注意: 先编写这些测试, 确保在实施前它们失败**
 
-- [ ] T021 [P] [US1] 在 pkg/llm/llm_test.go 中编写 OpenAI Provider 的单元测试(使用 Mock HTTP 响应)
-- [ ] T022 [P] [US1] 在 pkg/executor/executor_test.go 中编写命令执行测试(使用 MockLLMProvider)
-- [ ] T023 [P] [US1] 在 tests/integration/basic_test.go 中编写端到端集成测试(Mock LLM, 真实Shell)
+- [X] T021 [P] [US1] 在 pkg/llm/llm_test.go 中编写 OpenAI Provider 的单元测试(使用 Mock HTTP 响应)
+- [X] T022 [P] [US1] 在 pkg/executor/executor_test.go 中编写命令执行测试(使用 MockLLMProvider)
+- [X] T023 [P] [US1] 在 tests/integration/basic_test.go 中编写端到端集成测试(Mock LLM, 真实Shell)
 
 ### 用户故事 1 的实施
 
-- [ ] T024 [P] [US1] 在 pkg/llm/openai.go 中实现 OpenAIProvider 结构体和 Translate() 方法
-- [ ] T025 [P] [US1] 在 pkg/llm/prompt.go 中实现 Prompt 模板构建函数(包含系统提示和上下文)
-- [ ] T026 [US1] 在 pkg/executor/executor.go 中实现 Executor 结构体和 Execute() 方法
-- [ ] T027 [US1] 在 pkg/executor/executor.go 中实现命令执行逻辑(调用 os/exec, 处理stdout/stderr)
-- [ ] T028 [US1] 在 internal/app/app.go 中实现应用主逻辑(整合 Config, LLMProvider, Executor)
-- [ ] T029 [US1] 在 internal/app/app.go 中实现自然语言输入解析和LLM调用流程
-- [ ] T030 [US1] 在 internal/app/app.go 中实现危险命令检测和用户确认流程
-- [ ] T031 [US1] 在 cmd/aicli/main.go 中连接 Cobra 命令到 app.Run() 函数
-- [ ] T032 [US1] 添加错误处理(LLM 超时、网络错误、命令执行失败)到 internal/app/app.go
-- [ ] T033 [US1] 在所有导出函数和类型添加中文 godoc 注释
+- [X] T024 [P] [US1] 在 pkg/llm/openai.go 中实现 OpenAIProvider 结构体和 Translate() 方法
+- [X] T025 [P] [US1] 在 pkg/llm/prompt.go 中实现 Prompt 模板构建函数(包含系统提示和上下文)
+- [X] T026 [US1] 在 pkg/executor/executor.go 中实现 Executor 结构体和 Execute() 方法
+- [X] T027 [US1] 在 pkg/executor/executor.go 中实现命令执行逻辑(调用 os/exec, 处理stdout/stderr)
+- [X] T028 [US1] 在 internal/app/app.go 中实现应用主逻辑(整合 Config, LLMProvider, Executor)
+- [X] T029 [US1] 在 internal/app/app.go 中实现自然语言输入解析和LLM调用流程
+- [X] T030 [US1] 在 internal/app/app.go 中实现危险命令检测和用户确认流程
+- [X] T031 [US1] 在 cmd/aicli/main.go 中连接 Cobra 命令到 app.Run() 函数
+- [X] T032 [US1] 添加错误处理(LLM 超时、网络错误、命令执行失败)到 internal/app/app.go
+- [X] T033 [US1] 在所有导出函数和类型添加中文 godoc 注释
 
 **检查点**: 此时, 用户故事 1 应该完全功能化且可独立测试
 运行 `aicli "显示当前目录"` 应该成功转换并执行命令
@@ -102,20 +102,20 @@
 
 ### 用户故事 2 的测试 ⚠️
 
-- [ ] T034 [P] [US2] 在 tests/integration/pipeline_test.go 中编写管道输入测试(stdin → aicli)
-- [ ] T035 [P] [US2] 在 tests/integration/pipeline_test.go 中编写管道输出测试(aicli → stdout)
-- [ ] T036 [P] [US2] 在 tests/integration/pipeline_test.go 中编写链式管道测试(stdin → aicli → stdout)
+- [X] T034 [P] [US2] 在 tests/integration/pipeline_test.go 中编写管道输入测试(stdin → aicli)
+- [X] T035 [P] [US2] 在 tests/integration/pipeline_test.go 中编写管道输出测试(aicli → stdout)
+- [X] T036 [P] [US2] 在 tests/integration/pipeline_test.go 中编写链式管道测试(stdin → aicli → stdout)
 
 ### 用户故事 2 的实施
 
-- [ ] T037 [P] [US2] 在 internal/app/io.go 中实现 stdin 检测函数(检查是否有管道输入)
-- [ ] T038 [P] [US2] 在 internal/app/io.go 中实现 stdin 读取函数(读取所有输入数据)
-- [ ] T039 [US2] 在 internal/app/app.go 中集成 stdin 数据到 ExecutionContext
-- [ ] T040 [US2] 在 pkg/llm/prompt.go 中更新 Prompt 模板,将 stdin 数据作为上下文传递给 LLM
-- [ ] T041 [US2] 在 pkg/executor/executor.go 中实现命令输出到 stdout 而非直接打印
-- [ ] T042 [US2] 在 internal/app/app.go 中实现管道模式检测(stdin存在时自动非交互模式)
-- [ ] T043 [US2] 添加 --no-send-stdin 标志到 internal/app/flags.go(隐私保护)
-- [ ] T044 [US2] 在 internal/app/io_test.go 中编写 stdin 检测和读取的单元测试
+- [X] T037 [P] [US2] 在 internal/app/io.go 中实现 stdin 检测函数(检查是否有管道输入)
+- [X] T038 [P] [US2] 在 internal/app/io.go 中实现 stdin 读取函数(读取所有输入数据)
+- [X] T039 [US2] 在 internal/app/app.go 中集成 stdin 数据到 ExecutionContext
+- [X] T040 [US2] 在 pkg/llm/prompt.go 中更新 Prompt 模板,将 stdin 数据作为上下文传递给 LLM
+- [X] T041 [US2] 在 pkg/executor/executor.go 中实现命令输出到 stdout 而非直接打印
+- [X] T042 [US2] 在 internal/app/app.go 中实现管道模式检测(stdin存在时自动非交互模式)
+- [X] T043 [US2] 添加 --no-send-stdin 标志到 internal/app/flags.go(隐私保护)
+- [X] T044 [US2] 在 internal/app/io_test.go 中编写 stdin 检测和读取的单元测试
 
 **检查点**: 此时, 用户故事 1 和 2 都应该独立运行
 运行 `cat file.txt | aicli "查找ERROR"` 应该正确处理管道输入
@@ -130,21 +130,21 @@
 
 ### 用户故事 3 的测试 ⚠️
 
-- [ ] T045 [P] [US3] 在 internal/history/history_test.go 中编写历史记录保存和加载测试
-- [ ] T046 [P] [US3] 在 internal/app/app_test.go 中编写危险命令确认流程测试
+- [X] T045 [P] [US3] 在 internal/history/history_test.go 中编写历史记录保存和加载测试
+- [X] T046 [P] [US3] 在 internal/app/app_test.go 中编写危险命令确认流程测试
 
 ### 用户故事 3 的实施
 
-- [ ] T047 [P] [US3] 在 internal/history/history.go 中定义 HistoryEntry 结构体
-- [ ] T048 [P] [US3] 在 internal/history/history.go 中实现 History 结构体和 Add() 方法
-- [ ] T049 [US3] 在 internal/history/history.go 中实现 Load() 和 Save() 方法(从/到 ~/.aicli_history.json)
-- [ ] T050 [US3] 在 internal/history/history.go 中实现 List() 和 Get() 方法
-- [ ] T051 [US3] 在 internal/app/app.go 中集成历史记录保存(每次命令执行后)
-- [ ] T052 [US3] 在 internal/app/confirm.go 中实现 confirmDangerousCommand() 函数(显示命令并等待 y/n)
-- [ ] T053 [US3] 在 internal/app/app.go 中集成危险命令确认流程(SafetyChecker → confirm)
-- [ ] T054 [US3] 在 cmd/aicli/main.go 中添加 --history 子命令
-- [ ] T055 [US3] 在 cmd/aicli/main.go 中添加 --retry <ID> 子命令
-- [ ] T056 [US3] 添加 --force 标志跳过确认到 internal/app/flags.go
+- [X] T047 [P] [US3] 在 internal/history/history.go 中定义 HistoryEntry 结构体
+- [X] T048 [P] [US3] 在 internal/history/history.go 中实现 History 结构体和 Add() 方法
+- [X] T049 [US3] 在 internal/history/history.go 中实现 Load() 和 Save() 方法(从/到 ~/.aicli_history.json)
+- [X] T050 [US3] 在 internal/history/history.go 中实现 List() 和 Get() 方法
+- [X] T051 [US3] 在 internal/app/app.go 中集成历史记录保存(每次命令执行后)
+- [X] T052 [US3] 在 internal/app/confirm.go 中实现 confirmDangerousCommand() 函数(显示命令并等待 y/n)
+- [X] T053 [US3] 在 internal/app/app.go 中集成危险命令确认流程(SafetyChecker → confirm)
+- [X] T054 [US3] 在 cmd/aicli/main.go 中添加 --history 子命令
+- [X] T055 [US3] 在 cmd/aicli/main.go 中添加 --retry <ID> 子命令
+- [X] T056 [US3] 添加 --force 标志跳过确认到 internal/app/flags.go
 
 **检查点**: 所有用户故事现在应该独立功能化
 运行 `aicli "删除临时文件"` 应该触发确认提示，`aicli --history` 应该显示历史
@@ -155,12 +155,12 @@
 
 **目的**: 添加更多 LLM 提供商，提高工具灵活性
 
-- [ ] T057 [P] 在 pkg/llm/anthropic.go 中实现 AnthropicProvider 结构体和 Translate() 方法
-- [ ] T058 [P] 在 pkg/llm/localmodel.go 中实现 LocalModelProvider 支持本地 LLM (如 Ollama)
-- [ ] T059 在 pkg/llm/factory.go 中实现 Provider 工厂函数(根据配置创建对应Provider)
-- [ ] T060 在 internal/app/app.go 中集成 Provider 工厂，支持动态选择 LLM
-- [ ] T061 [P] 在 pkg/llm/anthropic_test.go 中编写 Anthropic Provider 测试
-- [ ] T062 [P] 在 pkg/llm/localmodel_test.go 中编写本地模型 Provider 测试
+- [X] T057 [P] 在 pkg/llm/anthropic.go 中实现 AnthropicProvider 结构体和 Translate() 方法
+- [X] T058 [P] 在 pkg/llm/localmodel.go 中实现 LocalModelProvider 支持本地 LLM (如 Ollama)
+- [X] T059 在 pkg/llm/factory.go 中实现 Provider 工厂函数(根据配置创建对应Provider)
+- [X] T060 在 internal/app/app.go 中集成 Provider 工厂，支持动态选择 LLM
+- [X] T061 [P] 在 pkg/llm/anthropic_test.go 中编写 Anthropic Provider 测试
+- [X] T062 [P] 在 pkg/llm/localmodel_test.go 中编写本地模型 Provider 测试
 
 ---
 
@@ -168,19 +168,19 @@
 
 **目的**: 影响多个用户故事的改进和文档完善
 
-- [ ] T063 [P] 在 docs/architecture.md 中编写架构设计文档(中文，包含模块图和数据流)
-- [ ] T064 [P] 在 docs/configuration.md 中编写配置文件详细说明(中文，包含所有配置项)
-- [ ] T065 [P] 在 docs/development.md 中编写开发指南(中文，包含构建、测试、贡献流程)
-- [ ] T066 [P] 在 README.md 中完善使用示例和常见问题解答(中文)
-- [ ] T067 [P] 创建 CONTRIBUTING.md 贡献指南(中文)
-- [ ] T068 在 internal/app/app.go 中实现 --verbose 模式(显示详细的LLM请求和响应)
-- [ ] T069 在 internal/app/app.go 中实现 --dry-run 模式(仅显示命令不执行)
-- [ ] T070 [P] 在 pkg/llm/logger.go 中实现可选日志记录(不包含敏感数据)
-- [ ] T071 代码审查和重构(确保所有函数有中文注释，代码符合 gofmt)
-- [ ] T072 运行 `go test -cover ./...` 验证整体覆盖率 ≥60%，核心包 ≥80%
-- [ ] T073 使用 golangci-lint 进行静态代码检查并修复问题
-- [ ] T074 创建示例配置文件 example.aicli.json 并添加说明注释
-- [ ] T075 编写安装脚本或提供预编译二进制文件下载说明
+- [X] T063 [P] 在 docs/architecture.md 中编写架构设计文档(中文，包含模块图和数据流)
+- [X] T064 [P] 在 docs/configuration.md 中编写配置文件详细说明(中文，包含所有配置项)
+- [X] T065 [P] 在 docs/development.md 中编写开发指南(中文，包含构建、测试、贡献流程)
+- [X] T066 [P] 在 README.md 中完善使用示例和常见问题解答(中文)
+- [X] T067 [P] 创建 CONTRIBUTING.md 贡献指南(中文)
+- [X] T068 在 internal/app/app.go 中实现 --verbose 模式(显示详细的LLM请求和响应)
+- [X] T069 在 internal/app/app.go 中实现 --dry-run 模式(仅显示命令不执行)
+- [X] T070 [P] 在 pkg/llm/logger.go 中实现可选日志记录(不包含敏感数据)
+- [X] T071 代码审查和重构(确保所有函数有中文注释，代码符合 gofmt)
+- [X] T072 运行 `go test -cover ./...` 验证整体覆盖率 ≥60%，核心包 ≥80%
+- [X] T073 使用 golangci-lint 进行静态代码检查并修复问题
+- [X] T074 创建示例配置文件 example.aicli.json 并添加说明注释
+- [X] T075 编写安装脚本或提供预编译二进制文件下载说明
 
 ---
 
