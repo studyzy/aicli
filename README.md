@@ -32,7 +32,19 @@ go install github.com/studyzy/aicli/cmd/aicli@latest
 
 ### 配置
 
-创建配置文件 `~/.aicli.json`：
+#### 自动配置（推荐）
+
+运行 `init` 命令进行交互式配置：
+
+```bash
+aicli init
+```
+
+这将引导您选择 LLM 提供商并设置 API 密钥。
+
+#### 手动配置
+
+手动创建配置文件 `~/.aicli.json`：
 
 ```json
 {
