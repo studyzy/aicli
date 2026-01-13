@@ -260,3 +260,57 @@ func TestExecutor_GetShell(t *testing.T) {
 		t.Error("Shell 路径不应为空")
 	}
 }
+
+// TestExecutor_Execute_IgnoreStderr 测试成功执行时忽略 stderr
+func TestExecutor_Execute_IgnoreStderr(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("跳过 Windows 测试，因为命令语法不同")
+	}
+
+	executor := NewExecutor()
+
+	// 这个命令会输出 "stdout output" 到 stdout，输出 "stderr output" 到 stderr
+	cmd := "echo stdout output; echo stderr output >&2"
+
+	output, err := executor.Execute(cmd, "")
+	if err != nil {
+		t.Fatalf("执行命令失败: %v", err)
+	}
+
+	// 验证 stdout 包含期望的内容
+	if !strings.Contains(output, "stdout output") {
+		t.Errorf("期望输出包含 'stdout output', 实际为: %q", output)
+	}
+
+	// 验证 stderr 不包含在 output 中
+	if strings.Contains(output, "stderr output") {
+		t.Errorf("期望输出不包含 'stderr output', 实际为: %q", output)
+	}
+}
+
+// TestExecutor_Execute_IncludeStderrOnError 测试失败执行时包含 stderr
+func TestExecutor_Execute_IncludeStderrOnError(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("跳过 Windows 测试，因为命令语法不同")
+	}
+
+	executor := NewExecutor()
+
+	// 这个命令会输出 "stderr output" 到 stderr，并以非零状态退出
+	cmd := "echo stderr output >&2; exit 1"
+
+	output, err := executor.Execute(cmd, "")
+	if err == nil {
+		t.Fatal("期望返回错误，但成功了")
+	}
+
+	// 验证错误信息包含 stderr 内容
+	if !strings.Contains(err.Error(), "stderr output") {
+		t.Errorf("期望错误信息包含 'stderr output', 实际为: %q", err.Error())
+	}
+
+	// output 应该是空的（或者包含 stdout 的内容，如果有的话）
+	if output != "" {
+		t.Logf("Output: %q", output)
+	}
+}

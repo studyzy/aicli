@@ -69,10 +69,12 @@ func (e *Executor) Execute(command string, stdin string) (string, error) {
 		return output, fmt.Errorf("命令执行失败: %w", err)
 	}
 
-	// 即使成功，也可能有 stderr 输出（如警告信息）
-	if errOutput != "" {
-		output = output + errOutput
-	}
+	// 即使成功，也可能有 stderr 输出（如警告信息），但在非交互式执行中，
+	// 我们通常只关心 stdout 的结果。stderr 中的内容（如进度条）可能会污染输出。
+	// 因此，在成功执行的情况下，我们忽略 stderr。
+	// if errOutput != "" {
+	// 	output = output + errOutput
+	// }
 
 	return output, nil
 }
@@ -122,9 +124,9 @@ func (e *Executor) ExecuteWithContext(command string, stdin string, shell *Shell
 		return output, fmt.Errorf("命令执行失败: %w", err)
 	}
 
-	if errOutput != "" {
-		output = output + errOutput
-	}
+	// if errOutput != "" {
+	// 	output = output + errOutput
+	// }
 
 	return output, nil
 }
