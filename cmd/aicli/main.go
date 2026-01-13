@@ -42,8 +42,14 @@ var rootCmd = &cobra.Command{
   cat file.txt | aicli "统计行数"
   aicli --history
   aicli --retry 3`,
-	Version: version,
-	RunE:    run,
+	Version:               version,
+	RunE:                  run,
+	Args:                  cobra.ArbitraryArgs,
+	DisableFlagParsing:    false,
+	FParseErrWhitelist:    cobra.FParseErrWhitelist{UnknownFlags: false},
+	SilenceUsage:          false,
+	DisableSuggestions:    false,
+	SuggestionsMinimumDistance: 2,
 }
 
 func run(cmd *cobra.Command, args []string) error {
