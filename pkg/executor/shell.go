@@ -8,6 +8,12 @@ import (
 	"strings"
 )
 
+const (
+	osWindows = "windows"
+	osDarwin  = "darwin"
+	osLinux   = "linux"
+)
+
 // ShellType 表示 Shell 类型
 type ShellType string
 
@@ -49,9 +55,9 @@ func DetectShell() (*ShellAdapter, error) {
 
 	// 根据操作系统检测
 	switch runtime.GOOS {
-	case "windows":
+	case osWindows:
 		return detectWindowsShell()
-	case "darwin", "linux":
+	case osDarwin, osLinux:
 		return detectUnixShellDefault()
 	default:
 		return nil, fmt.Errorf("不支持的操作系统: %s", runtime.GOOS)
@@ -145,7 +151,7 @@ func findExecutable(name string) (string, error) {
 	}
 
 	separator := ":"
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == osWindows {
 		separator = ";"
 	}
 

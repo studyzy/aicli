@@ -61,7 +61,7 @@ func NewLocalModelProvider(model, baseURL string) *LocalModelProvider {
 
 // Name 返回提供商名称
 func (p *LocalModelProvider) Name() string {
-	return "local"
+	return providerLocal
 }
 
 // Translate 将自然语言转换为命令

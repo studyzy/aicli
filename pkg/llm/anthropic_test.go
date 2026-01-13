@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+const (
+	commandLsla      = "ls -la"
+	commandGrepError = "grep ERROR"
+)
+
 // TestAnthropicProvider_Translate_Success 测试成功的命令转换
 func TestAnthropicProvider_Translate_Success(t *testing.T) {
 	// 创建模拟的 Anthropic API 服务器
@@ -62,7 +67,7 @@ func TestAnthropicProvider_Translate_Success(t *testing.T) {
 	if err != nil {
 		t.Fatalf("转换失败: %v", err)
 	}
-	if command != "ls -la" {
+	if command != commandLsla {
 		t.Errorf("期望命令 'ls -la', 实际为 '%s'", command)
 	}
 }
@@ -91,7 +96,7 @@ func TestAnthropicProvider_Translate_WithStdin(t *testing.T) {
 			"content": []map[string]interface{}{
 				{
 					"type": "text",
-					"text": "grep ERROR",
+					"text": commandGrepError,
 				},
 			},
 		}
@@ -115,7 +120,7 @@ func TestAnthropicProvider_Translate_WithStdin(t *testing.T) {
 	if err != nil {
 		t.Fatalf("转换失败: %v", err)
 	}
-	if command != "grep ERROR" {
+	if command != commandGrepError {
 		t.Errorf("期望命令 'grep ERROR', 实际为 '%s'", command)
 	}
 }
@@ -221,7 +226,7 @@ func TestAnthropicProvider_Translate_EmptyCommand(t *testing.T) {
 // TestAnthropicProvider_Name 测试提供商名称
 func TestAnthropicProvider_Name(t *testing.T) {
 	provider := NewAnthropicProvider("test-key", "claude-3-sonnet-20240229", "")
-	if provider.Name() != "anthropic" {
+	if provider.Name() != providerAnthropic {
 		t.Errorf("期望名称 'anthropic', 实际为 '%s'", provider.Name())
 	}
 }

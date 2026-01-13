@@ -10,7 +10,7 @@ import (
 func TestNewProvider_OpenAI(t *testing.T) {
 	cfg := &config.Config{
 		LLM: config.LLMConfig{
-			Provider: "openai",
+			Provider: providerOpenAI,
 			APIKey:   "test-key",
 			Model:    "gpt-4",
 			APIBase:  "https://api.openai.com/v1",
@@ -22,7 +22,7 @@ func TestNewProvider_OpenAI(t *testing.T) {
 		t.Fatalf("创建 OpenAI Provider 失败: %v", err)
 	}
 
-	if provider.Name() != "openai" {
+	if provider.Name() != providerOpenAI {
 		t.Errorf("期望 Provider 名称为 'openai', 实际为 '%s'", provider.Name())
 	}
 }
@@ -31,7 +31,7 @@ func TestNewProvider_OpenAI(t *testing.T) {
 func TestNewProvider_OpenAI_MissingAPIKey(t *testing.T) {
 	cfg := &config.Config{
 		LLM: config.LLMConfig{
-			Provider: "openai",
+			Provider: providerOpenAI,
 			APIKey:   "", // 缺少 API Key
 			Model:    "gpt-4",
 		},
@@ -47,7 +47,7 @@ func TestNewProvider_OpenAI_MissingAPIKey(t *testing.T) {
 func TestNewProvider_Anthropic(t *testing.T) {
 	cfg := &config.Config{
 		LLM: config.LLMConfig{
-			Provider: "anthropic",
+			Provider: providerAnthropic,
 			APIKey:   "test-key",
 			Model:    "claude-3-sonnet-20240229",
 		},
@@ -58,7 +58,7 @@ func TestNewProvider_Anthropic(t *testing.T) {
 		t.Fatalf("创建 Anthropic Provider 失败: %v", err)
 	}
 
-	if provider.Name() != "anthropic" {
+	if provider.Name() != providerAnthropic {
 		t.Errorf("期望 Provider 名称为 'anthropic', 实际为 '%s'", provider.Name())
 	}
 }
@@ -87,7 +87,7 @@ func TestNewProvider_Anthropic_AliasClaude(t *testing.T) {
 func TestNewProvider_LocalModel(t *testing.T) {
 	cfg := &config.Config{
 		LLM: config.LLMConfig{
-			Provider: "local",
+			Provider: providerLocal,
 			Model:    "llama2",
 			APIBase:  "http://localhost:11434",
 		},
@@ -98,7 +98,7 @@ func TestNewProvider_LocalModel(t *testing.T) {
 		t.Fatalf("创建本地模型 Provider 失败: %v", err)
 	}
 
-	if provider.Name() != "local" {
+	if provider.Name() != providerLocal {
 		t.Errorf("期望 Provider 名称为 'local', 实际为 '%s'", provider.Name())
 	}
 }
@@ -117,7 +117,7 @@ func TestNewProvider_LocalModel_AliasOllama(t *testing.T) {
 		t.Fatalf("创建 Ollama Provider 失败: %v", err)
 	}
 
-	if provider.Name() != "local" {
+	if provider.Name() != providerLocal {
 		t.Errorf("期望 Provider 名称为 'local', 实际为 '%s'", provider.Name())
 	}
 }

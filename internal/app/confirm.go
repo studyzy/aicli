@@ -1,3 +1,4 @@
+// Package app 提供应用程序核心功能
 package app
 
 import (
@@ -5,6 +6,10 @@ import (
 	"fmt"
 	"os"
 	"strings"
+)
+
+const (
+	responseYes = "yes"
 )
 
 // confirmDangerousCommand 请求用户确认执行危险命令
@@ -30,21 +35,5 @@ func confirmDangerousCommand(command string, description string, riskLevel strin
 
 	// 解析响应
 	response = strings.ToLower(strings.TrimSpace(response))
-	return response == "y" || response == "yes"
-}
-
-// confirmWithMessage 通用确认函数
-// message: 确认消息
-// 返回: true 表示用户确认，false 表示用户拒绝
-func confirmWithMessage(message string) bool {
-	fmt.Fprintf(os.Stderr, "%s (y/n): ", message)
-
-	reader := bufio.NewReader(os.Stdin)
-	response, err := reader.ReadString('\n')
-	if err != nil {
-		return false
-	}
-
-	response = strings.ToLower(strings.TrimSpace(response))
-	return response == "y" || response == "yes"
+	return response == "y" || response == responseYes
 }

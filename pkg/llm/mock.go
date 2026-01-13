@@ -47,7 +47,9 @@ func NewMockProvider() *MockLLMProvider {
 }
 
 // NewMockProviderWithFunc 创建带有自定义翻译函数的 Mock 提供商
-func NewMockProviderWithFunc(fn func(ctx context.Context, input string, execCtx *ExecutionContext) (string, error)) *MockLLMProvider {
+func NewMockProviderWithFunc(
+	fn func(ctx context.Context, input string, execCtx *ExecutionContext) (string, error),
+) *MockLLMProvider {
 	return &MockLLMProvider{
 		TranslateFunc: fn,
 		ProviderName:  "mock",

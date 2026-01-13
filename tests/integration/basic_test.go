@@ -14,6 +14,15 @@ import (
 	"github.com/studyzy/aicli/pkg/safety"
 )
 
+const (
+	osWindows           = "windows"
+	providerMock        = "mock"
+	commandEchoTest     = "echo test"
+	commandCat          = "cat"
+	commandFindstrError = "findstr ERROR"
+	commandGrepError    = "grep ERROR"
+)
+
 // TestBasicCommandTranslation 测试基本命令转换和执行
 func TestBasicCommandTranslation(t *testing.T) {
 	// 使用 Mock LLM Provider
@@ -21,21 +30,21 @@ func TestBasicCommandTranslation(t *testing.T) {
 		TranslateFn: func(input string) string {
 			// 根据输入返回模拟命令
 			if strings.Contains(input, "列出") || strings.Contains(input, "显示") {
-				if runtime.GOOS == "windows" {
+				if runtime.GOOS == osWindows {
 					return "dir"
 				}
 				return "ls"
 			}
-			return "echo test"
+			return commandEchoTest
 		},
 	}
 
 	// 创建配置
 	cfg := config.Default()
-	cfg.LLM.Provider = "mock"
+	cfg.LLM.Provider = providerMock
 
 	// 创建应用实例（不启用安全检查）
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	// 测试执行
 	flags := &app.Flags{
@@ -62,19 +71,19 @@ func TestCommandWithStdin(t *testing.T) {
 	mockProvider := &llm.MockLLMProvider{
 		TranslateFn: func(input string) string {
 			if strings.Contains(input, "过滤") || strings.Contains(input, "grep") {
-				if runtime.GOOS == "windows" {
-					return "findstr ERROR"
+				if runtime.GOOS == osWindows {
+					return commandFindstrError
 				}
-				return "grep ERROR"
+				return commandGrepError
 			}
-			return "cat"
+			return commandCat
 		},
 	}
 
 	cfg := config.Default()
-	cfg.LLM.Provider = "mock"
+	cfg.LLM.Provider = providerMock
 
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := &app.Flags{
 		Force: true,
@@ -95,14 +104,14 @@ func TestCommandWithStdin(t *testing.T) {
 func TestDryRunMode(t *testing.T) {
 	mockProvider := &llm.MockLLMProvider{
 		TranslateFn: func(input string) string {
-			return "echo test"
+			return commandEchoTest
 		},
 	}
 
 	cfg := config.Default()
-	cfg.LLM.Provider = "mock"
+	cfg.LLM.Provider = providerMock
 
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := &app.Flags{
 		DryRun: true,
@@ -128,9 +137,9 @@ func TestDangerousCommandDetection(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	cfg.LLM.Provider = "mock"
+	cfg.LLM.Provider = providerMock
 
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(true))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(true))
 
 	flags := &app.Flags{
 		Force: false, // 不强制执行，应该被拦截
@@ -157,14 +166,14 @@ func TestVerboseMode(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	cfg.LLM.Provider = "mock"
+	cfg.LLM.Provider = providerMock
 
 	// 捕获标准输出
 	oldStdout := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := &app.Flags{
 		Verbose: true,
@@ -201,9 +210,9 @@ func TestEmptyInput(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	cfg.LLM.Provider = "mock"
+	cfg.LLM.Provider = providerMock
 
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := &app.Flags{}
 

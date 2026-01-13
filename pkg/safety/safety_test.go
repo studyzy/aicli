@@ -6,7 +6,7 @@ import (
 )
 
 func TestSafetyChecker_IsDangerous(t *testing.T) {
-	checker := NewSafetyChecker(true)
+	checker := NewChecker(true)
 
 	tests := []struct {
 		name       string
@@ -169,7 +169,7 @@ func TestSafetyChecker_IsDangerous(t *testing.T) {
 }
 
 func TestSafetyChecker_Disabled(t *testing.T) {
-	checker := NewSafetyChecker(false)
+	checker := NewChecker(false)
 
 	// 禁用时，所有命令都应该返回安全
 	dangerousCommand := "rm -rf /"
@@ -181,7 +181,7 @@ func TestSafetyChecker_Disabled(t *testing.T) {
 }
 
 func TestSafetyChecker_EnableDisable(t *testing.T) {
-	checker := NewSafetyChecker(true)
+	checker := NewChecker(true)
 
 	if !checker.IsEnabled() {
 		t.Error("期望安全检查启用")
@@ -199,7 +199,7 @@ func TestSafetyChecker_EnableDisable(t *testing.T) {
 }
 
 func TestSafetyChecker_AddCustomPattern(t *testing.T) {
-	checker := NewSafetyChecker(true)
+	checker := NewChecker(true)
 
 	// 添加自定义模式
 	customPattern := Pattern{
@@ -227,7 +227,7 @@ func TestSafetyChecker_AddCustomPattern(t *testing.T) {
 }
 
 func TestSafetyChecker_CheckMultiple(t *testing.T) {
-	checker := NewSafetyChecker(true)
+	checker := NewChecker(true)
 
 	// 测试多个命令
 	commands := []string{
@@ -292,7 +292,7 @@ func TestDangerousPatterns_Coverage(t *testing.T) {
 }
 
 func TestSafetyChecker_EmptyCommand(t *testing.T) {
-	checker := NewSafetyChecker(true)
+	checker := NewChecker(true)
 
 	// 空命令应该返回安全
 	isDangerous, _, _ := checker.IsDangerous("")
@@ -309,7 +309,7 @@ func TestSafetyChecker_EmptyCommand(t *testing.T) {
 
 // Benchmark 测试性能
 func BenchmarkSafetyChecker_IsDangerous(b *testing.B) {
-	checker := NewSafetyChecker(true)
+	checker := NewChecker(true)
 	command := "rm -rf /tmp/test"
 
 	b.ResetTimer()
@@ -319,7 +319,7 @@ func BenchmarkSafetyChecker_IsDangerous(b *testing.B) {
 }
 
 func BenchmarkSafetyChecker_CheckMultiple(b *testing.B) {
-	checker := NewSafetyChecker(true)
+	checker := NewChecker(true)
 	commands := []string{
 		"ls -la",
 		"rm -rf /tmp/test",

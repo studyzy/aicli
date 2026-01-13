@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// HistoryEntry 表示一条历史记录
-type HistoryEntry struct {
+// Entry 表示一条历史记录
+type Entry struct {
 	// ID 唯一标识符
 	ID int `json:"id"`
 
@@ -39,7 +39,7 @@ type HistoryEntry struct {
 
 // History 管理历史记录
 type History struct {
-	entries  []*HistoryEntry
+	entries  []*Entry
 	nextID   int
 	maxSize  int
 	mu       sync.RWMutex
@@ -49,14 +49,14 @@ type History struct {
 // NewHistory 创建一个新的 History 实例
 func NewHistory() *History {
 	return &History{
-		entries: make([]*HistoryEntry, 0),
+		entries: make([]*Entry, 0),
 		nextID:  1,
 		maxSize: 1000, // 默认保留最近 1000 条
 	}
 }
 
 // Add 添加一条历史记录
-func (h *History) Add(entry *HistoryEntry) {
+func (h *History) Add(entry *Entry) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
@@ -75,12 +75,12 @@ func (h *History) Add(entry *HistoryEntry) {
 }
 
 // List 返回所有历史记录（最新的在前）
-func (h *History) List() []*HistoryEntry {
+func (h *History) List() []*Entry {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 
 	// 创建副本并反转顺序
-	result := make([]*HistoryEntry, len(h.entries))
+	result := make([]*Entry, len(h.entries))
 	for i, entry := range h.entries {
 		result[len(h.entries)-1-i] = entry
 	}
@@ -89,7 +89,7 @@ func (h *History) List() []*HistoryEntry {
 }
 
 // Get 根据 ID 获取历史记录
-func (h *History) Get(id int) (*HistoryEntry, error) {
+func (h *History) Get(id int) (*Entry, error) {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 
@@ -122,7 +122,7 @@ func (h *History) Save(filePath string) error {
 	}
 
 	// 写入文件
-	if err := os.WriteFile(filePath, data, 0644); err != nil {
+	if err := os.WriteFile(filePath, data, 0600); err != nil {
 		return fmt.Errorf("写入历史文件失败: %w", err)
 	}
 
@@ -148,7 +148,7 @@ func (h *History) Load(filePath string) error {
 	}
 
 	// 反序列化
-	var entries []*HistoryEntry
+	var entries []*Entry
 	if err := json.Unmarshal(data, &entries); err != nil {
 		return fmt.Errorf("解析历史记录失败: %w", err)
 	}
@@ -171,11 +171,11 @@ func (h *History) Load(filePath string) error {
 }
 
 // FilterBySuccess 筛选成功/失败的命令
-func (h *History) FilterBySuccess(success bool) []*HistoryEntry {
+func (h *History) FilterBySuccess(success bool) []*Entry {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 
-	result := make([]*HistoryEntry, 0)
+	result := make([]*Entry, 0)
 	for _, entry := range h.entries {
 		if entry.Success == success {
 			result = append(result, entry)
@@ -186,12 +186,12 @@ func (h *History) FilterBySuccess(success bool) []*HistoryEntry {
 }
 
 // Search 搜索历史记录（在 Input 和 Command 中搜索）
-func (h *History) Search(query string) []*HistoryEntry {
+func (h *History) Search(query string) []*Entry {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 
 	query = strings.ToLower(query)
-	result := make([]*HistoryEntry, 0)
+	result := make([]*Entry, 0)
 
 	for _, entry := range h.entries {
 		if strings.Contains(strings.ToLower(entry.Input), query) ||
@@ -208,7 +208,7 @@ func (h *History) Clear() {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	h.entries = make([]*HistoryEntry, 0)
+	h.entries = make([]*Entry, 0)
 	h.nextID = 1
 }
 

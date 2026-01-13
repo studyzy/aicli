@@ -62,7 +62,7 @@ func NewOpenAIProvider(apiKey, model, baseURL string) *OpenAIProvider {
 
 // Name 返回提供商名称
 func (p *OpenAIProvider) Name() string {
-	return "openai"
+	return providerOpenAI
 }
 
 // Translate 将自然语言转换为命令

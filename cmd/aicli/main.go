@@ -78,7 +78,7 @@ func run(cmd *cobra.Command, args []string) error {
 	exec := executor.NewExecutor()
 
 	// 创建 Safety Checker
-	checker := safety.NewSafetyChecker(cfg.Safety.EnableChecks)
+	checker := safety.NewChecker(cfg.Safety.EnableChecks)
 
 	// 创建应用实例
 	application := app.NewApp(cfg, provider, exec, checker)
@@ -86,9 +86,9 @@ func run(cmd *cobra.Command, args []string) error {
 	// 加载历史记录
 	hist := history.NewHistory()
 	historyPath := getHistoryPath()
-	if err := hist.Load(historyPath); err != nil {
+	if loadErr := hist.Load(historyPath); loadErr != nil {
 		if flags.Verbose {
-			fmt.Fprintf(os.Stderr, "加载历史记录失败: %v\n", err)
+			fmt.Fprintf(os.Stderr, "加载历史记录失败: %v\n", loadErr)
 		}
 	}
 	application.SetHistory(hist)
@@ -101,9 +101,9 @@ func run(cmd *cobra.Command, args []string) error {
 	stat, _ := os.Stdin.Stat()
 	if (stat.Mode() & os.ModeCharDevice) == 0 {
 		// stdin 是管道或重定向
-		stdinBytes, err := io.ReadAll(os.Stdin)
-		if err != nil {
-			return fmt.Errorf("读取 stdin 失败: %w", err)
+		stdinBytes, readErr := io.ReadAll(os.Stdin)
+		if readErr != nil {
+			return fmt.Errorf("读取 stdin 失败: %w", readErr)
 		}
 		stdin = string(stdinBytes)
 	}
@@ -158,7 +158,7 @@ func loadConfig() (*config.Config, error) {
 
 // createLLMProvider 创建 LLM Provider
 // 使用工厂函数统一管理 Provider 创建
-func createLLMProvider(cfg *config.Config) (llm.LLMProvider, error) {
+func createLLMProvider(cfg *config.Config) (llm.Provider, error) {
 	return llm.NewProvider(cfg)
 }
 
@@ -257,7 +257,7 @@ func retryCommand(id int) error {
 	exec := executor.NewExecutor()
 
 	// 创建 Safety Checker
-	checker := safety.NewSafetyChecker(cfg.Safety.EnableChecks)
+	checker := safety.NewChecker(cfg.Safety.EnableChecks)
 
 	// 创建应用实例
 	application := app.NewApp(cfg, provider, exec, checker)

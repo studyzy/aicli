@@ -260,9 +260,9 @@ func TestMaskCommand(t *testing.T) {
 // TestMaskError 测试错误脱敏
 func TestMaskError(t *testing.T) {
 	tests := []struct {
-		name     string
-		err      error
-		contains string
+		name        string
+		err         error
+		contains    string
 		notContains string
 	}{
 		{
@@ -294,7 +294,7 @@ func TestMaskError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := maskError(tt.err)
-			
+
 			if tt.contains != "" && !strings.Contains(result, tt.contains) {
 				t.Errorf("期望包含 %s, 实际: %s", tt.contains, result)
 			}
@@ -327,7 +327,7 @@ func TestParseLogLevel(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			result, err := ParseLogLevel(tt.input)
-			
+
 			if tt.hasError {
 				if err == nil {
 					t.Error("期望返回错误")
@@ -347,7 +347,7 @@ func TestParseLogLevel(t *testing.T) {
 // TestNewStderrLogger 测试创建 stderr logger
 func TestNewStderrLogger(t *testing.T) {
 	logger := NewStderrLogger(LogLevelInfo)
-	
+
 	if logger == nil {
 		t.Fatal("期望非 nil logger")
 	}

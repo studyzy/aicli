@@ -18,14 +18,14 @@ import (
 // App 是应用主结构
 type App struct {
 	config   *config.Config
-	llm      llm.LLMProvider
+	llm      llm.Provider
 	executor *executor.Executor
-	safety   *safety.SafetyChecker
+	safety   *safety.Checker
 	history  *history.History
 }
 
 // NewApp 创建一个新的应用实例
-func NewApp(cfg *config.Config, provider llm.LLMProvider, exec *executor.Executor, checker *safety.SafetyChecker) *App {
+func NewApp(cfg *config.Config, provider llm.Provider, exec *executor.Executor, checker *safety.Checker) *App {
 	return &App{
 		config:   cfg,
 		llm:      provider,
@@ -97,21 +97,8 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 
 	// 安全检查
 	if a.safety != nil && a.safety.IsEnabled() {
-		isDangerous, description, riskLevel := a.safety.IsDangerous(command)
-		if isDangerous {
-			// 管道模式下不进行交互式确认
-			if a.isPipeMode(stdin) {
-				if !flags.Force {
-					return "", fmt.Errorf("管道模式下拒绝执行危险命令（使用 --force 强制执行）")
-				}
-			} else {
-				// 非管道模式：如果没有强制执行，需要用户确认
-				if !flags.Force {
-					if !confirmDangerousCommand(command, description, riskLevel.String()) {
-						return "", fmt.Errorf("用户取消执行危险命令")
-					}
-				}
-			}
+		if safetyErr := a.handleDangerousCommand(command, stdin, flags); safetyErr != nil {
+			return "", safetyErr
 		}
 	}
 
@@ -130,29 +117,7 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 	execTime := time.Since(execStartTime)
 
 	// 保存历史记录
-	if a.history != nil {
-		entry := &history.HistoryEntry{
-			Input:     input,
-			Command:   command,
-			Timestamp: time.Now(),
-			Success:   err == nil,
-			ExitCode:  0,
-		}
-
-		if err != nil {
-			entry.Error = err.Error()
-			entry.ExitCode = 1
-		} else {
-			// 截断输出（避免历史文件过大）
-			if len(output) > 500 {
-				entry.Output = output[:500] + "... (truncated)"
-			} else {
-				entry.Output = output
-			}
-		}
-
-		a.history.Add(entry)
-	}
+	a.saveHistory(input, command, output, err)
 
 	if err != nil {
 		return output, fmt.Errorf("命令执行失败: %w", err)
@@ -165,6 +130,60 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 	}
 
 	return output, nil
+}
+
+// handleDangerousCommand 处理危险命令的安全检查和确认
+func (a *App) handleDangerousCommand(command string, stdin string, flags *Flags) error {
+	isDangerous, description, riskLevel := a.safety.IsDangerous(command)
+	if !isDangerous {
+		return nil
+	}
+
+	// 管道模式下不进行交互式确认
+	if a.isPipeMode(stdin) {
+		if !flags.Force {
+			return fmt.Errorf("管道模式下拒绝执行危险命令（使用 --force 强制执行）")
+		}
+		return nil
+	}
+
+	// 非管道模式：如果没有强制执行，需要用户确认
+	if !flags.Force {
+		if !confirmDangerousCommand(command, description, riskLevel.String()) {
+			return fmt.Errorf("用户取消执行危险命令")
+		}
+	}
+
+	return nil
+}
+
+// saveHistory 保存命令执行历史记录
+func (a *App) saveHistory(input string, command string, output string, err error) {
+	if a.history == nil {
+		return
+	}
+
+	entry := &history.Entry{
+		Input:     input,
+		Command:   command,
+		Timestamp: time.Now(),
+		Success:   err == nil,
+		ExitCode:  0,
+	}
+
+	if err != nil {
+		entry.Error = err.Error()
+		entry.ExitCode = 1
+	} else {
+		// 截断输出（避免历史文件过大）
+		if len(output) > 500 {
+			entry.Output = output[:500] + "... (truncated)"
+		} else {
+			entry.Output = output
+		}
+	}
+
+	a.history.Add(entry)
 }
 
 // buildExecutionContext 构建执行上下文

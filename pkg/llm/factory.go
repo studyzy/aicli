@@ -8,9 +8,16 @@ import (
 	"github.com/studyzy/aicli/pkg/config"
 )
 
-// NewProvider 根据配置创建对应的 LLMProvider
+const (
+	providerOpenAI   = "openai"
+	providerLocal    = "local"
+	providerMock     = "mock"
+	defaultOllamaURL = "http://localhost:11434"
+)
+
+// NewProvider 根据配置创建对应的 Provider
 // 这是工厂函数，根据配置中的 Provider 类型创建相应的实现
-func NewProvider(cfg *config.Config) (LLMProvider, error) {
+func NewProvider(cfg *config.Config) (Provider, error) {
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
 	}
@@ -18,16 +25,16 @@ func NewProvider(cfg *config.Config) (LLMProvider, error) {
 	providerType := strings.ToLower(cfg.LLM.Provider)
 
 	switch providerType {
-	case "openai":
+	case providerOpenAI:
 		return newOpenAIFromConfig(cfg)
 
-	case "anthropic", "claude":
+	case providerAnthropic, "claude":
 		return newAnthropicFromConfig(cfg)
 
-	case "local", "ollama":
+	case providerLocal, "ollama":
 		return newLocalModelFromConfig(cfg)
 
-	case "mock":
+	case providerMock:
 		// Mock provider 用于测试
 		return &MockLLMProvider{
 			TranslateFn: func(input string) string {
@@ -41,7 +48,7 @@ func NewProvider(cfg *config.Config) (LLMProvider, error) {
 }
 
 // newOpenAIFromConfig 从配置创建 OpenAI Provider
-func newOpenAIFromConfig(cfg *config.Config) (LLMProvider, error) {
+func newOpenAIFromConfig(cfg *config.Config) (Provider, error) {
 	if cfg.LLM.APIKey == "" {
 		return nil, fmt.Errorf("OpenAI API 密钥未配置")
 	}
@@ -55,7 +62,7 @@ func newOpenAIFromConfig(cfg *config.Config) (LLMProvider, error) {
 }
 
 // newAnthropicFromConfig 从配置创建 Anthropic Provider
-func newAnthropicFromConfig(cfg *config.Config) (LLMProvider, error) {
+func newAnthropicFromConfig(cfg *config.Config) (Provider, error) {
 	if cfg.LLM.APIKey == "" {
 		return nil, fmt.Errorf("Anthropic API 密钥未配置")
 	}
@@ -69,7 +76,7 @@ func newAnthropicFromConfig(cfg *config.Config) (LLMProvider, error) {
 }
 
 // newLocalModelFromConfig 从配置创建本地模型 Provider
-func newLocalModelFromConfig(cfg *config.Config) (LLMProvider, error) {
+func newLocalModelFromConfig(cfg *config.Config) (Provider, error) {
 	model := cfg.LLM.Model
 	if model == "" {
 		model = "llama2" // 默认模型
@@ -77,7 +84,7 @@ func newLocalModelFromConfig(cfg *config.Config) (LLMProvider, error) {
 
 	baseURL := cfg.LLM.APIBase
 	if baseURL == "" {
-		baseURL = "http://localhost:11434" // Ollama 默认地址
+		baseURL = defaultOllamaURL // Ollama 默认地址
 	}
 
 	return NewLocalModelProvider(model, baseURL), nil

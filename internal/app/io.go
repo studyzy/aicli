@@ -1,3 +1,4 @@
+// Package app 提供应用程序核心功能
 package app
 
 import (
@@ -26,30 +27,4 @@ func readStdin() (string, error) {
 		return "", err
 	}
 	return string(data), nil
-}
-
-// readStdinIfAvailable 检测并读取标准输入（如果有）
-// 返回读取的数据（可能为空字符串）和错误
-func readStdinIfAvailable() (string, error) {
-	if !hasStdin() {
-		return "", nil
-	}
-	return readStdin()
-}
-
-// truncateStdin 截断过长的 stdin 数据
-// maxLen: 最大长度（字节）
-// 返回截断后的字符串
-func truncateStdin(data string, maxLen int) string {
-	if len(data) <= maxLen {
-		return data
-	}
-
-	truncateMsg := "... (truncated)"
-	keepLen := maxLen - len(truncateMsg)
-	if keepLen < 0 {
-		keepLen = 0
-	}
-
-	return data[:keepLen] + truncateMsg
 }

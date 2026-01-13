@@ -157,10 +157,7 @@ func TestOpenAIProvider_Translate_APIError(t *testing.T) {
 func TestOpenAIProvider_Translate_Timeout(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 模拟长时间处理
-		select {
-		case <-r.Context().Done():
-			return
-		}
+		<-r.Context().Done()
 	}))
 	defer server.Close()
 

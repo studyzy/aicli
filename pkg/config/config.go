@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+const (
+	providerLocal = "local"
+)
+
 // Config 是应用程序的主配置结构体
 type Config struct {
 	Version   string          `json:"version"`
@@ -136,7 +140,7 @@ func (c *Config) Validate() error {
 	}
 
 	// 对于非本地模型，需要 API 密钥
-	if c.LLM.Provider != "local" && c.LLM.APIKey == "" {
+	if c.LLM.Provider != providerLocal && c.LLM.APIKey == "" {
 		return fmt.Errorf("LLM API 密钥不能为空（或设置环境变量 AICLI_API_KEY）")
 	}
 

@@ -235,10 +235,8 @@ func TestTruncateStdinForLLM(t *testing.T) {
 				if !strings.Contains(got, "... (truncated)") {
 					t.Error("截断后的数据应包含 '... (truncated)' 标记")
 				}
-			} else {
-				if got != tt.input {
-					t.Errorf("不应截断，但数据被修改了")
-				}
+			} else if got != tt.input {
+				t.Errorf("不应截断，但数据被修改了")
 			}
 		})
 	}

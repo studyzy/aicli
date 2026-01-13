@@ -39,7 +39,7 @@ func TestDetectShellByOS(t *testing.T) {
 
 	// 根据操作系统验证 Shell 类型
 	switch runtime.GOOS {
-	case "windows":
+	case osWindows:
 		if shell.Type != ShellPowerShell && shell.Type != ShellCmd {
 			t.Errorf("Windows 上期望 PowerShell 或 CMD, 实际为 %s", shell.Type)
 		}
@@ -178,12 +178,8 @@ func TestExecutor_Execute_Success(t *testing.T) {
 	executor := NewExecutor()
 
 	// 执行简单的跨平台命令
-	var cmd string
-	if runtime.GOOS == "windows" {
-		cmd = "echo hello"
-	} else {
-		cmd = "echo hello"
-	}
+	const cmdHello = "echo hello"
+	cmd := cmdHello
 
 	output, err := executor.Execute(cmd, "")
 	if err != nil {
@@ -200,11 +196,13 @@ func TestExecutor_Execute_WithStdin(t *testing.T) {
 	executor := NewExecutor()
 
 	// 使用 cat (Unix) 或 findstr (Windows) 读取 stdin
+	const cmdCat = "cat"
+	const cmdFindstr = "findstr .*"
 	var cmd string
-	if runtime.GOOS == "windows" {
-		cmd = "findstr .*"
+	if runtime.GOOS == osWindows {
+		cmd = cmdFindstr
 	} else {
-		cmd = "cat"
+		cmd = cmdCat
 	}
 
 	stdin := "test input data\nline 2\nline 3"
@@ -263,7 +261,7 @@ func TestExecutor_GetShell(t *testing.T) {
 
 // TestExecutor_Execute_IgnoreStderr 测试成功执行时忽略 stderr
 func TestExecutor_Execute_IgnoreStderr(t *testing.T) {
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == osWindows {
 		t.Skip("跳过 Windows 测试，因为命令语法不同")
 	}
 

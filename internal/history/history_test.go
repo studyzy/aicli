@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-// TestHistoryEntry_Creation 测试历史条目创建
-func TestHistoryEntry_Creation(t *testing.T) {
-	entry := &HistoryEntry{
+// TestEntry_Creation 测试历史条目创建
+func TestEntry_Creation(t *testing.T) {
+	entry := &Entry{
 		ID:        1,
 		Input:     "list files",
 		Command:   "ls -la",
@@ -37,14 +37,14 @@ func TestHistoryEntry_Creation(t *testing.T) {
 func TestHistory_Add(t *testing.T) {
 	history := NewHistory()
 
-	entry1 := &HistoryEntry{
+	entry1 := &Entry{
 		Input:     "test1",
 		Command:   "echo test1",
 		Timestamp: time.Now(),
 		Success:   true,
 	}
 
-	entry2 := &HistoryEntry{
+	entry2 := &Entry{
 		Input:     "test2",
 		Command:   "echo test2",
 		Timestamp: time.Now(),
@@ -74,7 +74,7 @@ func TestHistory_List(t *testing.T) {
 
 	// 添加多条记录
 	for i := 1; i <= 5; i++ {
-		history.Add(&HistoryEntry{
+		history.Add(&Entry{
 			Input:   "test",
 			Command: "echo test",
 			Success: true,
@@ -100,13 +100,13 @@ func TestHistory_List(t *testing.T) {
 func TestHistory_Get(t *testing.T) {
 	history := NewHistory()
 
-	history.Add(&HistoryEntry{
+	history.Add(&Entry{
 		Input:   "test1",
 		Command: "echo test1",
 		Success: true,
 	})
 
-	history.Add(&HistoryEntry{
+	history.Add(&Entry{
 		Input:   "test2",
 		Command: "echo test2",
 		Success: true,
@@ -137,7 +137,7 @@ func TestHistory_SaveAndLoad(t *testing.T) {
 
 	// 创建并保存历史记录
 	history1 := NewHistory()
-	history1.Add(&HistoryEntry{
+	history1.Add(&Entry{
 		Input:     "test command",
 		Command:   "echo test",
 		Timestamp: time.Now(),
@@ -158,9 +158,9 @@ func TestHistory_SaveAndLoad(t *testing.T) {
 
 	// 加载历史记录
 	history2 := NewHistory()
-	err = history2.Load(historyFile)
-	if err != nil {
-		t.Fatalf("Load() failed: %v", err)
+	loadErr := history2.Load(historyFile)
+	if loadErr != nil {
+		t.Fatalf("Load() failed: %v", loadErr)
 	}
 
 	// 验证数据一致性
@@ -200,7 +200,7 @@ func TestHistory_MaxEntries(t *testing.T) {
 	// 添加超过最大限制的记录
 	maxEntries := 1000
 	for i := 0; i < maxEntries+100; i++ {
-		history.Add(&HistoryEntry{
+		history.Add(&Entry{
 			Input:   "test",
 			Command: "echo test",
 			Success: true,
@@ -218,19 +218,19 @@ func TestHistory_FilterSuccess(t *testing.T) {
 	history := NewHistory()
 
 	// 添加成功和失败的命令
-	history.Add(&HistoryEntry{
+	history.Add(&Entry{
 		Input:   "success1",
 		Command: "echo ok",
 		Success: true,
 	})
 
-	history.Add(&HistoryEntry{
+	history.Add(&Entry{
 		Input:   "failed1",
 		Command: "invalid_cmd",
 		Success: false,
 	})
 
-	history.Add(&HistoryEntry{
+	history.Add(&Entry{
 		Input:   "success2",
 		Command: "echo ok2",
 		Success: true,
@@ -253,19 +253,19 @@ func TestHistory_FilterSuccess(t *testing.T) {
 func TestHistory_Search(t *testing.T) {
 	history := NewHistory()
 
-	history.Add(&HistoryEntry{
+	history.Add(&Entry{
 		Input:   "list files in directory",
 		Command: "ls -la /home",
 		Success: true,
 	})
 
-	history.Add(&HistoryEntry{
+	history.Add(&Entry{
 		Input:   "find text file",
 		Command: "find . -name '*.txt'",
 		Success: true,
 	})
 
-	history.Add(&HistoryEntry{
+	history.Add(&Entry{
 		Input:   "count lines",
 		Command: "wc -l data.txt",
 		Success: true,
@@ -291,7 +291,7 @@ func TestHistory_Clear(t *testing.T) {
 
 	// 添加一些记录
 	for i := 0; i < 5; i++ {
-		history.Add(&HistoryEntry{
+		history.Add(&Entry{
 			Input:   "test",
 			Command: "echo test",
 			Success: true,
@@ -322,7 +322,7 @@ func TestHistory_ConcurrentAccess(t *testing.T) {
 	done := make(chan bool)
 	for i := 0; i < 10; i++ {
 		go func() {
-			history.Add(&HistoryEntry{
+			history.Add(&Entry{
 				Input:   "concurrent test",
 				Command: "echo test",
 				Success: true,

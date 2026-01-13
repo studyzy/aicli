@@ -13,15 +13,17 @@ import (
 
 // TestApp_DangerousCommandConfirmation 测试危险命令确认流程
 func TestApp_DangerousCommandConfirmation(t *testing.T) {
+	const testCommand = "rm -rf /tmp/test"
+
 	// 创建返回危险命令的 Mock Provider
 	mockProvider := &llm.MockLLMProvider{
 		TranslateFn: func(input string) string {
-			return "rm -rf /tmp/test"
+			return testCommand
 		},
 	}
 
 	cfg := config.Default()
-	checker := safety.NewSafetyChecker(true) // 启用安全检查
+	checker := safety.NewChecker(true) // 启用安全检查
 	application := NewApp(cfg, mockProvider, executor.NewExecutor(), checker)
 
 	flags := NewFlags()
@@ -49,7 +51,7 @@ func TestApp_ForceBypassConfirmation(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	checker := safety.NewSafetyChecker(true)
+	checker := safety.NewChecker(true)
 	application := NewApp(cfg, mockProvider, executor.NewExecutor(), checker)
 
 	flags := NewFlags()
@@ -74,7 +76,7 @@ func TestApp_SafetyCheckDisabled(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	checker := safety.NewSafetyChecker(false) // 禁用安全检查
+	checker := safety.NewChecker(false) // 禁用安全检查
 	application := NewApp(cfg, mockProvider, executor.NewExecutor(), checker)
 
 	flags := NewFlags()
@@ -91,14 +93,16 @@ func TestApp_SafetyCheckDisabled(t *testing.T) {
 
 // TestApp_PipeModeNonInteractive 测试管道模式下的非交互行为
 func TestApp_PipeModeNonInteractive(t *testing.T) {
+	const testCommand = "rm -rf /tmp/test"
+
 	mockProvider := &llm.MockLLMProvider{
 		TranslateFn: func(input string) string {
-			return "rm -rf /tmp/test" // 危险命令
+			return testCommand // 危险命令
 		},
 	}
 
 	cfg := config.Default()
-	checker := safety.NewSafetyChecker(true)
+	checker := safety.NewChecker(true)
 	application := NewApp(cfg, mockProvider, executor.NewExecutor(), checker)
 
 	flags := NewFlags()
@@ -124,7 +128,7 @@ func TestApp_PipeModeWithForce(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	checker := safety.NewSafetyChecker(true)
+	checker := safety.NewChecker(true)
 	application := NewApp(cfg, mockProvider, executor.NewExecutor(), checker)
 
 	flags := NewFlags()
@@ -150,7 +154,7 @@ func TestApp_EmptyCommand(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	application := NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := NewFlags()
 
@@ -173,7 +177,7 @@ func TestApp_DryRunMode(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	application := NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := NewFlags()
 	flags.DryRun = true
@@ -233,7 +237,7 @@ func TestApp_VerboseMode(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	application := NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := NewFlags()
 	flags.Verbose = true
@@ -264,7 +268,7 @@ func TestApp_NoSendStdin(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	application := NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := NewFlags()
 	flags.NoSendStdin = true

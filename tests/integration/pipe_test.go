@@ -16,6 +16,12 @@ import (
 	"github.com/studyzy/aicli/pkg/safety"
 )
 
+const (
+	commandEchoHello        = "echo hello"
+	commandFindCountWindows = "find /c /v \"\""
+	commandWcL              = "wc -l"
+)
+
 // TestPipeInput_BasicPipeline 测试基本管道输入场景
 func TestPipeInput_BasicPipeline(t *testing.T) {
 	// 创建 Mock LLM Provider，返回使用 stdin 的命令
@@ -23,25 +29,25 @@ func TestPipeInput_BasicPipeline(t *testing.T) {
 		TranslateFn: func(input string) string {
 			// 根据输入返回适合的命令
 			if strings.Contains(input, "统计") || strings.Contains(input, "行数") {
-				if runtime.GOOS == "windows" {
-					return "find /c /v \"\""
+				if runtime.GOOS == osWindows {
+					return commandFindCountWindows
 				}
-				return "wc -l"
+				return commandWcL
 			}
 			if strings.Contains(input, "查找") || strings.Contains(input, "grep") {
-				if runtime.GOOS == "windows" {
+				if runtime.GOOS == osWindows {
 					return "findstr ERROR"
 				}
 				return "grep ERROR"
 			}
-			return "cat"
+			return commandCat
 		},
 	}
 
 	cfg := config.Default()
 	cfg.LLM.Provider = "mock"
 
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	// 测试数据
 	stdinData := "line 1\nline 2 ERROR\nline 3\nline 4 ERROR\nline 5"
@@ -64,15 +70,15 @@ func TestPipeInput_BasicPipeline(t *testing.T) {
 func TestPipeInput_NoStdin(t *testing.T) {
 	mockProvider := &llm.MockLLMProvider{
 		TranslateFn: func(input string) string {
-			if runtime.GOOS == "windows" {
-				return "echo hello"
+			if runtime.GOOS == osWindows {
+				return commandEchoHello
 			}
-			return "echo hello"
+			return commandEchoHello
 		},
 	}
 
 	cfg := config.Default()
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := app.NewFlags()
 
@@ -91,15 +97,15 @@ func TestPipeInput_NoStdin(t *testing.T) {
 func TestPipeInput_LargeData(t *testing.T) {
 	mockProvider := &llm.MockLLMProvider{
 		TranslateFn: func(input string) string {
-			if runtime.GOOS == "windows" {
-				return "find /c /v \"\""
+			if runtime.GOOS == osWindows {
+				return commandFindCountWindows
 			}
-			return "wc -l"
+			return commandWcL
 		},
 	}
 
 	cfg := config.Default()
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	// 生成 1000 行数据
 	var largeData strings.Builder
@@ -131,7 +137,7 @@ func TestPipeOutput_RedirectToFile(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := app.NewFlags()
 
@@ -167,23 +173,23 @@ func TestPipeChain_MultipleCommands(t *testing.T) {
 	mockProvider := &llm.MockLLMProvider{
 		TranslateFn: func(input string) string {
 			if strings.Contains(input, "filter") || strings.Contains(input, "筛选") {
-				if runtime.GOOS == "windows" {
+				if runtime.GOOS == osWindows {
 					return "findstr line"
 				}
 				return "grep line"
 			}
 			if strings.Contains(input, "count") || strings.Contains(input, "统计") {
-				if runtime.GOOS == "windows" {
-					return "find /c /v \"\""
+				if runtime.GOOS == osWindows {
+					return commandFindCountWindows
 				}
-				return "wc -l"
+				return commandWcL
 			}
-			return "cat"
+			return commandCat
 		},
 	}
 
 	cfg := config.Default()
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := app.NewFlags()
 
@@ -226,7 +232,7 @@ func TestPipeInput_NoSendStdin(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	stdinData := "sensitive data\npassword: 12345"
 
@@ -252,7 +258,7 @@ func TestPipeInput_EmptyStdin(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	flags := app.NewFlags()
 
@@ -276,7 +282,7 @@ func TestPipeInput_BinaryData(t *testing.T) {
 	}
 
 	cfg := config.Default()
-	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewSafetyChecker(false))
+	application := app.NewApp(cfg, mockProvider, executor.NewExecutor(), safety.NewChecker(false))
 
 	// 模拟二进制数据（包含 null 字节）
 	binaryData := "text\x00binary\x01data\xff"

@@ -40,7 +40,9 @@ func (e *Executor) Execute(command string, stdin string) (string, error) {
 	}
 
 	// 构建命令
-	args := append(e.shell.Args, command)
+	args := make([]string, len(e.shell.Args))
+	copy(args, e.shell.Args)
+	args = append(args, command)
 	cmd := exec.Command(e.shell.Path, args...)
 
 	// 设置标准输入
@@ -95,7 +97,9 @@ func (e *Executor) ExecuteWithContext(command string, stdin string, shell *Shell
 	}
 
 	// 构建命令
-	args := append(shell.Args, command)
+	args := make([]string, len(shell.Args))
+	copy(args, shell.Args)
+	args = append(args, command)
 	cmd := exec.Command(shell.Path, args...)
 
 	// 设置标准输入

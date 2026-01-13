@@ -19,7 +19,7 @@ func GetSystemPrompt(ctx *ExecutionContext) string {
 	sb.WriteString("5. 优先使用常见且兼容性好的命令\n\n")
 
 	if ctx != nil {
-		sb.WriteString(fmt.Sprintf("执行环境：\n"))
+		sb.WriteString("执行环境：\n")
 		sb.WriteString(fmt.Sprintf("- 操作系统: %s\n", ctx.OS))
 		sb.WriteString(fmt.Sprintf("- Shell: %s\n", ctx.Shell))
 		sb.WriteString(fmt.Sprintf("- 工作目录: %s\n", ctx.WorkDir))

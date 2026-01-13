@@ -12,6 +12,10 @@ import (
 	"time"
 )
 
+const (
+	providerAnthropic = "anthropic"
+)
+
 // AnthropicProvider 实现了 Anthropic Claude API 的 LLMProvider 接口
 type AnthropicProvider struct {
 	apiKey  string
@@ -64,7 +68,7 @@ func NewAnthropicProvider(apiKey, model, baseURL string) *AnthropicProvider {
 
 // Name 返回提供商名称
 func (p *AnthropicProvider) Name() string {
-	return "anthropic"
+	return providerAnthropic
 }
 
 // Translate 将自然语言转换为命令

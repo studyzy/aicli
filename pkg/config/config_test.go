@@ -6,6 +6,11 @@ import (
 	"testing"
 )
 
+const (
+	providerOpenAI = "openai"
+	testModel      = "test-model"
+)
+
 func TestDefault(t *testing.T) {
 	cfg := Default()
 
@@ -13,7 +18,7 @@ func TestDefault(t *testing.T) {
 		t.Errorf("期望版本为 1.0, 实际为 %s", cfg.Version)
 	}
 
-	if cfg.LLM.Provider != "openai" {
+	if cfg.LLM.Provider != providerOpenAI {
 		t.Errorf("期望默认 LLM 提供商为 openai, 实际为 %s", cfg.LLM.Provider)
 	}
 
@@ -41,7 +46,7 @@ func TestLoadNonExistentFile(t *testing.T) {
 		t.Fatalf("加载不存在的文件应返回默认配置，但返回错误: %v", err)
 	}
 
-	if cfg.LLM.Provider != "openai" {
+	if cfg.LLM.Provider != providerOpenAI {
 		t.Errorf("期望默认提供商为 openai, 实际为 %s", cfg.LLM.Provider)
 	}
 }
@@ -113,8 +118,8 @@ func TestSaveConfig(t *testing.T) {
 	configPath := filepath.Join(tmpDir, "save_test.json")
 
 	cfg := Default()
-	cfg.LLM.Provider = "local" // 使用本地模型不需要 API 密钥
-	cfg.LLM.Model = "test-model"
+	cfg.LLM.Provider = providerLocal // 使用本地模型不需要 API 密钥
+	cfg.LLM.Model = testModel
 
 	// 保存配置
 	if err := cfg.Save(configPath); err != nil {

@@ -3,8 +3,8 @@ package llm
 
 import "context"
 
-// LLMProvider 定义 LLM 服务提供商的接口
-type LLMProvider interface {
+// Provider 定义 LLM 服务提供商的接口
+type Provider interface {
 	// Translate 将自然语言转换为命令
 	// ctx: 上下文，用于超时控制
 	// input: 用户的自然语言描述

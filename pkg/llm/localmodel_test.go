@@ -199,7 +199,7 @@ func TestLocalModelProvider_Translate_EmptyCommand(t *testing.T) {
 // TestLocalModelProvider_Name 测试提供商名称
 func TestLocalModelProvider_Name(t *testing.T) {
 	provider := NewLocalModelProvider("llama2", "http://localhost:11434")
-	if provider.Name() != "local" {
+	if provider.Name() != providerLocal {
 		t.Errorf("期望名称 'local', 实际为 '%s'", provider.Name())
 	}
 }
