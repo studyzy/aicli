@@ -7,9 +7,15 @@ import (
 
 	"github.com/studyzy/aicli/pkg/config"
 	"github.com/studyzy/aicli/pkg/executor"
+	"github.com/studyzy/aicli/pkg/i18n"
 	"github.com/studyzy/aicli/pkg/llm"
 	"github.com/studyzy/aicli/pkg/safety"
 )
+
+func init() {
+	// 初始化 i18n (默认中文)
+	i18n.Init(config.Default())
+}
 
 // TestApp_DangerousCommandConfirmation 测试危险命令确认流程
 func TestApp_DangerousCommandConfirmation(t *testing.T) {

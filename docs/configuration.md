@@ -28,6 +28,7 @@ aicli --config /path/to/custom.aicli.json "列出文件"
 ```json
 {
   "version": "1.0",
+  "language": "zh",
   "llm": {
     "provider": "openai",
     "api_key": "sk-xxxxxxxxxxxxx",
@@ -70,7 +71,44 @@ aicli --config /path/to/custom.aicli.json "列出文件"
 
 配置文件的版本号，用于未来的配置迁移。
 
-### 2. llm (LLM 配置)
+### 2. language (语言设置)
+
+**类型**: `string`  
+**必需**: 否  
+**默认值**: 自动检测 (从 `LANG` 或 `LC_ALL` 环境变量)  
+**可选值**: `zh` (中文), `en` (英文)
+
+界面显示语言和 LLM 提示词语言。
+
+**语言检测优先级**:
+1. 配置文件中的 `language` 字段 (最高优先级)
+2. `LANG` 环境变量
+3. `LC_ALL` 环境变量  
+4. 默认值: `zh` (中文)
+
+**示例**:
+
+```json
+{
+  "language": "en"
+}
+```
+
+或通过环境变量:
+
+```bash
+# 使用英文
+export LANG=en_US.UTF-8
+aicli "list files"
+
+# 使用中文
+export LANG=zh_CN.UTF-8
+aicli "列出文件"
+```
+
+详细说明请参阅 [国际化指南](i18n-guide.md)。
+
+### 3. llm (LLM 配置)
 
 #### llm.provider (提供商)
 
@@ -193,7 +231,7 @@ LLM 响应的最大令牌数。
 
 **说明**: 命令通常很短，500 足够。增加此值不会提高质量，但会增加成本。
 
-### 3. execution (执行配置)
+### 4. execution (执行配置)
 
 #### execution.auto_confirm (自动确认)
 
@@ -241,7 +279,7 @@ LLM 响应的最大令牌数。
 - `auto`: 自动检测系统默认 Shell（推荐）
 - 其他值: 强制使用指定 Shell
 
-### 4. safety (安全配置)
+### 5. safety (安全配置)
 
 #### safety.enable_checks (启用检查)
 
@@ -287,7 +325,7 @@ LLM 响应的最大令牌数。
 
 **说明**: 即使设为 `false`，仍会显示警告。
 
-### 5. history (历史配置)
+### 6. history (历史配置)
 
 #### history.enabled (启用历史)
 
@@ -315,7 +353,7 @@ LLM 响应的最大令牌数。
 
 历史记录文件的路径。
 
-### 6. logging (日志配置)
+### 7. logging (日志配置)
 
 #### logging.enabled (启用日志)
 

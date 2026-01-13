@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/studyzy/aicli/pkg/i18n"
 )
 
 const (
@@ -19,12 +21,13 @@ const (
 // 返回: true 表示用户确认，false 表示用户拒绝
 func confirmDangerousCommand(command string, description string, riskLevel string) bool {
 	// 显示警告信息
-	fmt.Fprintf(os.Stderr, "\n⚠️  检测到潜在危险命令！\n")
-	fmt.Fprintf(os.Stderr, "命令: %s\n", command)
-	fmt.Fprintf(os.Stderr, "风险: %s (等级: %s)\n\n", description, riskLevel)
+	fmt.Fprintf(os.Stderr, "\n⚠️  %s\n", i18n.T(i18n.WarnDangerousCommand))
+	fmt.Fprintf(os.Stderr, "%s: %s\n", i18n.T(i18n.LabelCommand), command)
+	fmt.Fprintf(os.Stderr, "%s: %s (%s: %s)\n\n", i18n.T(i18n.WarnRisk), description, i18n.T(i18n.WarnRiskLevel), riskLevel)
 
 	// 请求确认
-	fmt.Fprintf(os.Stderr, "是否继续执行？(y/n): ")
+	msg := i18n.T(i18n.PromptConfirmRisky)
+	fmt.Fprintf(os.Stderr, "%s", msg)
 
 	// 读取用户输入
 	reader := bufio.NewReader(os.Stdin)

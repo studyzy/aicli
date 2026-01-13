@@ -15,6 +15,7 @@
 - 🛡️ **安全确认机制**：自动检测危险命令（删除、格式化等），执行前需要用户确认
 - 📜 **历史记录**：保存命令历史，支持查看和重新执行
 - 🔌 **多 LLM 提供商**：支持 OpenAI、Anthropic、本地模型等多种 LLM 服务
+- 🌐 **国际化支持**：支持中文和英文，自动检测操作系统语言
 - 🌍 **跨平台**：支持 Linux、macOS 和 Windows 系统
 
 ## 🚀 快速开始
@@ -51,6 +52,7 @@ aicli init
 ```json
 {
   "version": "1.0",
+  "language": "zh",
   "llm": {
     "provider": "openai",
     "api_key": "your-api-key-here",
@@ -67,6 +69,12 @@ aicli init
   }
 }
 ```
+
+**语言设置**：`language` 字段可选，支持以下值：
+- `"zh"` - 中文
+- `"en"` - English (英文)
+
+如果不设置，AICLI 会自动从 `LANG` 或 `LC_ALL` 环境变量检测系统语言。默认为中文。
 
 也可以通过环境变量配置 API 密钥：
 
@@ -508,6 +516,7 @@ go tool cover -html=coverage.out
 
 - [架构设计](docs/architecture.md)
 - [配置说明](docs/configuration.md)
+- [国际化指南](docs/i18n-guide.md)
 - [开发指南](docs/development.md)
 
 ## 🔐 安全与隐私

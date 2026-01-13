@@ -16,6 +16,7 @@ const (
 // Config 是应用程序的主配置结构体
 type Config struct {
 	Version   string          `json:"version"`
+	Language  string          `json:"language,omitempty"` // 界面语言 (zh, en, 空表示自动检测)
 	LLM       LLMConfig       `json:"llm"`
 	Execution ExecutionConfig `json:"execution"`
 	Safety    SafetyConfig    `json:"safety"`

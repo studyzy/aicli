@@ -10,9 +10,15 @@ import (
 	"github.com/studyzy/aicli/internal/app"
 	"github.com/studyzy/aicli/pkg/config"
 	"github.com/studyzy/aicli/pkg/executor"
+	"github.com/studyzy/aicli/pkg/i18n"
 	"github.com/studyzy/aicli/pkg/llm"
 	"github.com/studyzy/aicli/pkg/safety"
 )
+
+func init() {
+	// 初始化 i18n (默认中文)
+	i18n.Init(config.Default())
+}
 
 const (
 	osWindows           = "windows"

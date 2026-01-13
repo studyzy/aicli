@@ -11,6 +11,7 @@ import (
 	"github.com/studyzy/aicli/internal/history"
 	"github.com/studyzy/aicli/pkg/config"
 	"github.com/studyzy/aicli/pkg/executor"
+	"github.com/studyzy/aicli/pkg/i18n"
 	"github.com/studyzy/aicli/pkg/llm"
 	"github.com/studyzy/aicli/pkg/safety"
 )
@@ -24,7 +25,7 @@ var (
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "错误: %v\n", err)
+		fmt.Fprintf(os.Stderr, "%s: %v\n", i18n.T("label.error"), err)
 		os.Exit(1)
 	}
 }
@@ -53,6 +54,18 @@ var rootCmd = &cobra.Command{
 }
 
 func run(cmd *cobra.Command, args []string) error {
+	// 加载配置(用于语言检测)
+	cfg, err := loadConfig()
+	if err != nil {
+		return fmt.Errorf("%s: %w", i18n.T(i18n.ErrLoadConfig), err)
+	}
+
+	// 初始化 i18n
+	i18n.Init(cfg)
+
+	// 更新命令描述为对应语言
+	updateCommandDescriptions(cmd)
+
 	// 如果没有参数，显示帮助
 	if len(args) == 0 && !flags.History && flags.Retry < 0 {
 		return cmd.Help()
@@ -68,16 +81,10 @@ func run(cmd *cobra.Command, args []string) error {
 		return retryCommand(flags.Retry)
 	}
 
-	// 加载配置
-	cfg, err := loadConfig()
-	if err != nil {
-		return fmt.Errorf("加载配置失败: %w", err)
-	}
-
 	// 创建 LLM Provider
 	provider, err := createLLMProvider(cfg)
 	if err != nil {
-		return fmt.Errorf("创建 LLM Provider 失败: %w", err)
+		return fmt.Errorf("%s: %w", i18n.T(i18n.ErrCreateProvider), err)
 	}
 
 	// 创建 Executor
@@ -94,7 +101,8 @@ func run(cmd *cobra.Command, args []string) error {
 	historyPath := getHistoryPath()
 	if loadErr := hist.Load(historyPath); loadErr != nil {
 		if flags.Verbose {
-			fmt.Fprintf(os.Stderr, "加载历史记录失败: %v\n", loadErr)
+			msg := i18n.T(i18n.VerboseLoadHistoryFailed, loadErr)
+			fmt.Fprintf(os.Stderr, "%s\n", msg)
 		}
 	}
 	application.SetHistory(hist)
@@ -109,7 +117,7 @@ func run(cmd *cobra.Command, args []string) error {
 		// stdin 是管道或重定向
 		stdinBytes, readErr := io.ReadAll(os.Stdin)
 		if readErr != nil {
-			return fmt.Errorf("读取 stdin 失败: %w", readErr)
+			return fmt.Errorf("%s: %w", i18n.T(i18n.ErrReadStdin), readErr)
 		}
 		stdin = string(stdinBytes)
 	}
@@ -119,7 +127,8 @@ func run(cmd *cobra.Command, args []string) error {
 
 	// 保存历史记录（即使执行失败也保存）
 	if saveErr := hist.Save(historyPath); saveErr != nil && flags.Verbose {
-		fmt.Fprintf(os.Stderr, "保存历史记录失败: %v\n", saveErr)
+		msg := i18n.T(i18n.VerboseSaveHistoryFailed, saveErr)
+		fmt.Fprintf(os.Stderr, "%s\n", msg)
 	}
 
 	if err != nil {
@@ -142,19 +151,19 @@ func loadConfig() (*config.Config, error) {
 	// 否则尝试从默认位置加载
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return nil, fmt.Errorf("获取用户主目录失败: %w", err)
+		return nil, fmt.Errorf("failed to get user home directory / 获取用户主目录失败: %w", err)
 	}
 
 	configPath := homeDir + "/.aicli.json"
 
 	// 如果配置文件不存在，使用默认配置
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		// 提示用户初始化
-		fmt.Fprintf(os.Stderr, "提示: 配置文件 %s 不存在。\n", configPath)
-		fmt.Fprintf(os.Stderr, "您可以运行 'aicli init' 来快速设置配置。\n\n")
+		// 提示用户初始化 (这里还未初始化i18n,使用双语提示)
+		fmt.Fprintf(os.Stderr, "Note / 提示: Configuration file / 配置文件 %s does not exist / 不存在。\n", configPath)
+		fmt.Fprintf(os.Stderr, "You can run / 您可以运行 'aicli init' for quick setup / 来快速设置配置。\n\n")
 
 		if flags.Verbose {
-			fmt.Fprintf(os.Stderr, "配置文件不存在，使用默认配置\n")
+			fmt.Fprintf(os.Stderr, "Using default configuration / 使用默认配置\n")
 		}
 		return config.Default(), nil
 	}
@@ -199,16 +208,16 @@ func showHistory() error {
 	historyPath := getHistoryPath()
 
 	if err := hist.Load(historyPath); err != nil {
-		return fmt.Errorf("加载历史记录失败: %w", err)
+		return fmt.Errorf("%s: %w", i18n.T(i18n.ErrLoadHistory), err)
 	}
 
 	entries := hist.List()
 	if len(entries) == 0 {
-		fmt.Println("没有历史记录")
+		fmt.Println(i18n.T(i18n.MsgNoHistory))
 		return nil
 	}
 
-	fmt.Printf("历史记录（共 %d 条）：\n\n", len(entries))
+	fmt.Println(i18n.T(i18n.MsgHistoryCount, len(entries)) + "\n")
 	for _, entry := range entries {
 		status := "✓"
 		if !entry.Success {
@@ -216,11 +225,11 @@ func showHistory() error {
 		}
 
 		fmt.Printf("[%d] %s %s\n", entry.ID, status, entry.Timestamp.Format("2006-01-02 15:04:05"))
-		fmt.Printf("    输入: %s\n", entry.Input)
-		fmt.Printf("    命令: %s\n", entry.Command)
+		fmt.Printf("    %s: %s\n", i18n.T(i18n.LabelInput), entry.Input)
+		fmt.Printf("    %s: %s\n", i18n.T(i18n.LabelCommand), entry.Command)
 
 		if entry.Error != "" {
-			fmt.Printf("    错误: %s\n", entry.Error)
+			fmt.Printf("    %s: %s\n", i18n.T(i18n.LabelError), entry.Error)
 		}
 
 		fmt.Println()
@@ -235,7 +244,7 @@ func retryCommand(id int) error {
 	historyPath := getHistoryPath()
 
 	if err := hist.Load(historyPath); err != nil {
-		return fmt.Errorf("加载历史记录失败: %w", err)
+		return fmt.Errorf("%s: %w", i18n.T(i18n.ErrLoadHistory), err)
 	}
 
 	entry, err := hist.Get(id)
@@ -243,20 +252,21 @@ func retryCommand(id int) error {
 		return err
 	}
 
-	fmt.Fprintf(os.Stderr, "重新执行历史命令 #%d:\n", id)
-	fmt.Fprintf(os.Stderr, "  输入: %s\n", entry.Input)
-	fmt.Fprintf(os.Stderr, "  命令: %s\n\n", entry.Command)
+	msg := i18n.T(i18n.MsgRetryCommand, id)
+	fmt.Fprintf(os.Stderr, "%s\n", msg)
+	fmt.Fprintf(os.Stderr, "  %s: %s\n", i18n.T(i18n.LabelInput), entry.Input)
+	fmt.Fprintf(os.Stderr, "  %s: %s\n\n", i18n.T(i18n.LabelCommand), entry.Command)
 
 	// 加载配置
 	cfg, err := loadConfig()
 	if err != nil {
-		return fmt.Errorf("加载配置失败: %w", err)
+		return fmt.Errorf("%s: %w", i18n.T(i18n.ErrLoadConfig), err)
 	}
 
 	// 创建 LLM Provider
 	provider, err := createLLMProvider(cfg)
 	if err != nil {
-		return fmt.Errorf("创建 LLM Provider 失败: %w", err)
+		return fmt.Errorf("%s: %w", i18n.T(i18n.ErrCreateProvider), err)
 	}
 
 	// 创建 Executor
@@ -285,4 +295,34 @@ func retryCommand(id int) error {
 	fmt.Print(output)
 
 	return nil
+}
+
+// updateCommandDescriptions 更新命令描述为对应语言
+func updateCommandDescriptions(cmd *cobra.Command) {
+	cmd.Use = i18n.T(i18n.CobraUse)
+	cmd.Short = i18n.T(i18n.CobraShort)
+	cmd.Long = i18n.T(i18n.CobraLong)
+	
+	// 更新标志说明
+	if flag := cmd.PersistentFlags().Lookup("config"); flag != nil {
+		flag.Usage = i18n.T(i18n.CobraFlagConfig)
+	}
+	if flag := cmd.PersistentFlags().Lookup("verbose"); flag != nil {
+		flag.Usage = i18n.T(i18n.CobraFlagVerbose)
+	}
+	if flag := cmd.Flags().Lookup("dry-run"); flag != nil {
+		flag.Usage = i18n.T(i18n.CobraFlagDryRun)
+	}
+	if flag := cmd.Flags().Lookup("force"); flag != nil {
+		flag.Usage = i18n.T(i18n.CobraFlagForce)
+	}
+	if flag := cmd.Flags().Lookup("no-send-stdin"); flag != nil {
+		flag.Usage = i18n.T(i18n.CobraFlagNoSendStdin)
+	}
+	if flag := cmd.Flags().Lookup("history"); flag != nil {
+		flag.Usage = i18n.T(i18n.CobraFlagHistory)
+	}
+	if flag := cmd.Flags().Lookup("retry"); flag != nil {
+		flag.Usage = i18n.T(i18n.CobraFlagRetry)
+	}
 }

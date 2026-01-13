@@ -4,25 +4,60 @@ package llm
 import (
 	"fmt"
 	"strings"
+
+	"github.com/studyzy/aicli/pkg/i18n"
 )
 
 // GetSystemPrompt 返回系统提示词
+// lang: 语言代码 (zh/en)
 func GetSystemPrompt(ctx *ExecutionContext) string {
+	lang := i18n.Lang()
+	
+	if lang == "en" {
+		return buildEnglishSystemPrompt(ctx)
+	}
+	return buildChineseSystemPrompt(ctx)
+}
+
+// buildChineseSystemPrompt 构建中文系统提示词
+func buildChineseSystemPrompt(ctx *ExecutionContext) string {
 	var sb strings.Builder
 
-	sb.WriteString("你是一个命令行助手，专门将用户的自然语言描述转换为可执行的 shell 命令。\n\n")
-	sb.WriteString("规则：\n")
-	sb.WriteString("1. 只返回命令本身，不要有任何解释或说明\n")
-	sb.WriteString("2. 不要使用 markdown 代码块格式\n")
-	sb.WriteString("3. 命令必须是可以直接执行的\n")
-	sb.WriteString("4. 如果需要多个命令，使用 && 或 ; 连接\n")
-	sb.WriteString("5. 优先使用常见且兼容性好的命令\n\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptIntro) + "\n\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRules) + "\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRule1) + "\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRule2) + "\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRule3) + "\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRule4) + "\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRule5) + "\n\n")
 
 	if ctx != nil {
-		sb.WriteString("执行环境：\n")
-		sb.WriteString(fmt.Sprintf("- 操作系统: %s\n", ctx.OS))
-		sb.WriteString(fmt.Sprintf("- Shell: %s\n", ctx.Shell))
-		sb.WriteString(fmt.Sprintf("- 工作目录: %s\n", ctx.WorkDir))
+		sb.WriteString(i18n.T(i18n.LLMSystemPromptEnv) + "\n")
+		sb.WriteString(fmt.Sprintf("- %s: %s\n", i18n.T(i18n.LabelOS), ctx.OS))
+		sb.WriteString(fmt.Sprintf("- %s: %s\n", i18n.T(i18n.LabelShell), ctx.Shell))
+		sb.WriteString(fmt.Sprintf("- %s: %s\n", i18n.T(i18n.LabelWorkDir), ctx.WorkDir))
+	}
+
+	return sb.String()
+}
+
+// buildEnglishSystemPrompt 构建英文系统提示词
+func buildEnglishSystemPrompt(ctx *ExecutionContext) string {
+	var sb strings.Builder
+
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptIntro) + "\n\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRules) + "\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRule1) + "\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRule2) + "\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRule3) + "\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRule4) + "\n")
+	sb.WriteString(i18n.T(i18n.LLMSystemPromptRule5) + "\n\n")
+
+	if ctx != nil {
+		sb.WriteString(i18n.T(i18n.LLMSystemPromptEnv) + "\n")
+		sb.WriteString(fmt.Sprintf("- %s: %s\n", i18n.T(i18n.LabelOS), ctx.OS))
+		sb.WriteString(fmt.Sprintf("- %s: %s\n", i18n.T(i18n.LabelShell), ctx.Shell))
+		sb.WriteString(fmt.Sprintf("- %s: %s\n", i18n.T(i18n.LabelWorkDir), ctx.WorkDir))
 	}
 
 	return sb.String()
@@ -33,17 +68,17 @@ func BuildPrompt(input string, ctx *ExecutionContext) string {
 	var sb strings.Builder
 
 	// 添加用户输入
-	sb.WriteString(fmt.Sprintf("将以下自然语言描述转换为命令：\n%s\n", input))
+	sb.WriteString(fmt.Sprintf("%s\n%s\n", i18n.T(i18n.LLMUserPromptIntro), input))
 
 	// 如果有标准输入，添加上下文
 	if ctx != nil && ctx.Stdin != "" {
-		sb.WriteString("\n标准输入数据：\n")
+		sb.WriteString("\n" + i18n.T(i18n.LLMStdinData) + "\n")
 
 		// 限制 stdin 的长度，避免提示词过长
 		maxStdinLen := 500
 		stdin := ctx.Stdin
 		if len(stdin) > maxStdinLen {
-			stdin = stdin[:maxStdinLen] + "... (已截断)"
+			stdin = stdin[:maxStdinLen] + i18n.T(i18n.LLMTruncated)
 		}
 
 		sb.WriteString(stdin)
@@ -56,18 +91,18 @@ func BuildPrompt(input string, ctx *ExecutionContext) string {
 // BuildContextDescription 构建执行上下文描述（用于调试和日志）
 func BuildContextDescription(ctx *ExecutionContext) string {
 	if ctx == nil {
-		return "无执行上下文"
+		return i18n.T(i18n.LLMContextNoContext)
 	}
 
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("OS: %s, Shell: %s, WorkDir: %s", ctx.OS, ctx.Shell, ctx.WorkDir))
+	sb.WriteString(i18n.T(i18n.LLMContextFormat, ctx.OS, ctx.Shell, ctx.WorkDir))
 
 	if ctx.Stdin != "" {
 		stdinLen := len(ctx.Stdin)
 		if stdinLen > 50 {
-			sb.WriteString(fmt.Sprintf(", Stdin: %d bytes", stdinLen))
+			sb.WriteString(fmt.Sprintf(", %s", i18n.T(i18n.LabelStdinBytes, stdinLen)))
 		} else {
-			sb.WriteString(fmt.Sprintf(", Stdin: %q", ctx.Stdin))
+			sb.WriteString(fmt.Sprintf(", %s: %q", i18n.T(i18n.LabelStdin), ctx.Stdin))
 		}
 	}
 

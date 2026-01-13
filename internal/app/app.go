@@ -11,6 +11,7 @@ import (
 	"github.com/studyzy/aicli/internal/history"
 	"github.com/studyzy/aicli/pkg/config"
 	"github.com/studyzy/aicli/pkg/executor"
+	"github.com/studyzy/aicli/pkg/i18n"
 	"github.com/studyzy/aicli/pkg/llm"
 	"github.com/studyzy/aicli/pkg/safety"
 )
@@ -48,14 +49,14 @@ func (a *App) SetHistory(h *history.History) {
 func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 	// 验证输入
 	if input == "" {
-		return "", fmt.Errorf("请提供自然语言描述")
+		return "", fmt.Errorf("%s", i18n.T(i18n.ErrNoInput))
 	}
 
 	// 详细模式：显示输入
 	if flags.Verbose {
-		fmt.Fprintf(os.Stderr, "自然语言输入: %s\n", input)
+		fmt.Fprintf(os.Stderr, "%s: %s\n", i18n.T(i18n.VerboseInput), input)
 		if stdin != "" {
-			fmt.Fprintf(os.Stderr, "标准输入: %d 字节\n", len(stdin))
+			fmt.Fprintf(os.Stderr, "%s: %d %s\n", i18n.T(i18n.LabelStdin), len(stdin), i18n.T(i18n.LabelStdinBytes))
 		}
 	}
 
@@ -64,7 +65,7 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 
 	// 详细模式：显示上下文
 	if flags.Verbose {
-		fmt.Fprintf(os.Stderr, "执行上下文: %s\n", llm.BuildContextDescription(execCtx))
+		fmt.Fprintf(os.Stderr, "%s: %s\n", i18n.T(i18n.VerboseContext), llm.BuildContextDescription(execCtx))
 	}
 
 	// 调用 LLM 转换命令
@@ -79,20 +80,20 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 
 	command, err := a.llm.Translate(ctx, input, execCtx)
 	if err != nil {
-		return "", fmt.Errorf("命令转换失败: %w", err)
+		return "", fmt.Errorf("%s: %w", i18n.T(i18n.ErrTranslateFailed), err)
 	}
 
 	translateTime := time.Since(startTime)
 
 	// 验证命令不为空
 	if command == "" {
-		return "", fmt.Errorf("LLM 返回空命令")
+		return "", fmt.Errorf("%s", i18n.T(i18n.ErrEmptyCommand))
 	}
 
 	// 详细模式：显示转换结果
 	if flags.Verbose {
-		fmt.Fprintf(os.Stderr, "转换后的命令: %s\n", command)
-		fmt.Fprintf(os.Stderr, "转换耗时: %v\n", translateTime)
+		fmt.Fprintf(os.Stderr, "%s: %s\n", i18n.T(i18n.VerboseCommand), command)
+		fmt.Fprintf(os.Stderr, "%s: %v\n", i18n.T(i18n.VerboseTranslateTime), translateTime)
 	}
 
 	// 安全检查
@@ -104,12 +105,13 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 
 	// Dry-run 模式：只显示命令不执行
 	if flags.DryRun {
-		return fmt.Sprintf("将要执行的命令: %s", command), nil
+		return i18n.T(i18n.DryRunWillExecute, command), nil
 	}
 
 	// 执行命令
 	if flags.Verbose {
-		fmt.Fprintf(os.Stderr, "开始执行命令...\n")
+		msg := i18n.T(i18n.VerboseExecuting)
+		fmt.Fprintf(os.Stderr, "%s\n", msg)
 	}
 
 	execStartTime := time.Now()
@@ -120,13 +122,13 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 	a.saveHistory(input, command, output, err)
 
 	if err != nil {
-		return output, fmt.Errorf("命令执行失败: %w", err)
+		return output, fmt.Errorf("%s: %w", i18n.T(i18n.ErrExecuteFailed), err)
 	}
 
 	// 详细模式：显示执行时间
 	if flags.Verbose {
-		fmt.Fprintf(os.Stderr, "执行耗时: %v\n", execTime)
-		fmt.Fprintf(os.Stderr, "总耗时: %v\n", translateTime+execTime)
+		fmt.Fprintf(os.Stderr, "%s: %v\n", i18n.T(i18n.VerboseExecuteTime), execTime)
+		fmt.Fprintf(os.Stderr, "%s: %v\n", i18n.T(i18n.VerboseTotalTime), translateTime+execTime)
 	}
 
 	return output, nil
@@ -142,7 +144,7 @@ func (a *App) handleDangerousCommand(command string, stdin string, flags *Flags)
 	// 管道模式下不进行交互式确认
 	if a.isPipeMode(stdin) {
 		if !flags.Force {
-			return fmt.Errorf("管道模式下拒绝执行危险命令（使用 --force 强制执行）")
+			return fmt.Errorf("%s", i18n.T(i18n.ErrPipeModeDanger))
 		}
 		return nil
 	}
@@ -150,7 +152,7 @@ func (a *App) handleDangerousCommand(command string, stdin string, flags *Flags)
 	// 非管道模式：如果没有强制执行，需要用户确认
 	if !flags.Force {
 		if !confirmDangerousCommand(command, description, riskLevel.String()) {
-			return fmt.Errorf("用户取消执行危险命令")
+			return fmt.Errorf("%s", i18n.T(i18n.ErrUserCancelled))
 		}
 	}
 

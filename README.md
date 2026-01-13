@@ -15,6 +15,7 @@ AICLI is a Go tool that brings natural-language operations to your terminal. You
 - **Safety confirmations**: detects risky commands (e.g., bulk delete/format) and asks before executing
 - **Command history**: stores past prompts/commands and supports retry
 - **Multiple LLM providers**: OpenAI, Anthropic, local models, and other OpenAI-compatible APIs
+- **Internationalization (i18n)**: supports Chinese and English with automatic detection from OS locale
 - **Cross-platform**: Linux, macOS, and Windows
 
 ## Quick start
@@ -51,6 +52,7 @@ Create `~/.aicli.json`:
 ```json
 {
   "version": "1.0",
+  "language": "en",
   "llm": {
     "provider": "openai",
     "api_key": "your-api-key-here",
@@ -67,6 +69,12 @@ Create `~/.aicli.json`:
   }
 }
 ```
+
+**Language setting**: The `language` field is optional. Supported values:
+- `"zh"` - Chinese (中文)
+- `"en"` - English
+
+If not set, AICLI automatically detects your system locale from `LANG` or `LC_ALL` environment variables. Default is Chinese.
 
 You can also set the API key via environment variable:
 
@@ -218,6 +226,7 @@ go test ./...
 
 - [Architecture](docs/architecture.md)
 - [Configuration](docs/configuration.md)
+- [Internationalization Guide](docs/i18n-guide.md)
 - [Development guide](docs/development.md)
 
 ## Security & privacy

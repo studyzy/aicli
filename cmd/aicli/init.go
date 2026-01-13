@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/studyzy/aicli/pkg/config"
+	"github.com/studyzy/aicli/pkg/i18n"
 )
 
 const (
@@ -20,8 +21,8 @@ const (
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "初始化配置",
-	Long:  `引导用户设置 LLM 配置并生成配置文件 ~/.aicli.json`,
+	Short: "初始化配置 / Initialize configuration",
+	Long:  "引导用户设置 LLM 配置并生成配置文件 ~/.aicli.json / Guide user to set up LLM configuration",
 	RunE:  runInit,
 }
 
@@ -30,6 +31,10 @@ func init() {
 }
 
 func runInit(cmd *cobra.Command, args []string) error {
+	// 初始化 i18n (在配置文件加载前使用默认配置)
+	cfg := config.Default()
+	i18n.Init(cfg)
+
 	reader := bufio.NewReader(os.Stdin)
 
 	configPath, err := getConfigPath()
@@ -41,11 +46,9 @@ func runInit(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Println("欢迎使用 aicli 配置向导！")
-	fmt.Println("我们将引导您完成基本配置。")
+	fmt.Println(i18n.T(i18n.MsgWelcomeInit))
+	fmt.Println(i18n.T(i18n.MsgInitGuide))
 	fmt.Println()
-
-	cfg := config.Default()
 
 	if err := configureProvider(reader, cfg); err != nil {
 		return err
@@ -69,31 +72,32 @@ func getConfigPath() (string, error) {
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return "", fmt.Errorf("获取用户主目录失败: %w", err)
+		return "", fmt.Errorf("%s: %w", i18n.T(i18n.ErrGetUserHome), err)
 	}
 	return homeDir + "/.aicli.json", nil
 }
 
 func checkExistingConfig(reader *bufio.Reader, configPath string) error {
 	if _, err := os.Stat(configPath); err == nil {
-		fmt.Printf("配置文件 %s 已存在。\n", configPath)
-		if !promptBool(reader, "是否覆盖？", false) {
-			fmt.Println("操作已取消。")
-			return fmt.Errorf("用户取消操作")
+		msg := i18n.T(i18n.MsgConfigExists, configPath)
+		fmt.Printf("%s\n", msg)
+		if !promptBool(reader, i18n.T(i18n.PromptOverwriteConfig), false) {
+			fmt.Println(i18n.T(i18n.MsgOperationCancelled))
+			return fmt.Errorf("%s", i18n.T(i18n.ErrUserCancelled))
 		}
 	}
 	return nil
 }
 
 func configureProvider(reader *bufio.Reader, cfg *config.Config) error {
-	fmt.Println("请选择 LLM 提供商:")
-	fmt.Println("1. OpenAI (GPT-4, GPT-3.5)")
-	fmt.Println("2. Anthropic (Claude)")
-	fmt.Println("3. Local (Ollama, LocalAI)")
-	fmt.Println("4. DeepSeek (深度求索)")
-	fmt.Println("5. Other (兼容 OpenAI 协议)")
+	fmt.Println(i18n.T(i18n.PromptSelectProvider) + ":")
+	fmt.Println(i18n.T(i18n.InitProviderOpenAI))
+	fmt.Println(i18n.T(i18n.InitProviderAnthropic))
+	fmt.Println(i18n.T(i18n.InitProviderLocal))
+	fmt.Println(i18n.T(i18n.InitProviderDeepSeek))
+	fmt.Println(i18n.T(i18n.InitProviderOther))
 
-	providerChoice := prompt(reader, "请输入序号 [1-5]", "1")
+	providerChoice := prompt(reader, i18n.T(i18n.PromptInputChoice)+" [1-5]", "1")
 
 	switch providerChoice {
 	case "1":
@@ -117,7 +121,7 @@ func configureProvider(reader *bufio.Reader, cfg *config.Config) error {
 		cfg.LLM.Model = "gpt-3.5-turbo"
 		cfg.LLM.APIBase = apiBaseOpenAI
 	default:
-		fmt.Println("无效的选择，默认使用 OpenAI")
+		fmt.Println(i18n.T(i18n.MsgDefaultUseOpenAI))
 		cfg.LLM.Provider = providerOpenAI
 	}
 
@@ -126,34 +130,37 @@ func configureProvider(reader *bufio.Reader, cfg *config.Config) error {
 
 func configureAPI(reader *bufio.Reader, cfg *config.Config) error {
 	if cfg.LLM.Provider != providerLocal {
-		cfg.LLM.APIKey = prompt(reader, "请输入 API Key", "")
+		cfg.LLM.APIKey = prompt(reader, i18n.T(i18n.PromptEnterAPIKey), "")
 		if cfg.LLM.APIKey == "" {
-			fmt.Println("警告: API Key 为空，您可能需要在环境变量 AICLI_API_KEY 中设置。")
+			fmt.Println(i18n.T(i18n.WarnAPIKeyEmpty))
 		}
 	}
 
-	cfg.LLM.Model = prompt(reader, fmt.Sprintf("请输入模型名称 (默认: %s)", cfg.LLM.Model), cfg.LLM.Model)
-	cfg.LLM.APIBase = prompt(reader, fmt.Sprintf("请输入 API Base URL (默认: %s)", cfg.LLM.APIBase), cfg.LLM.APIBase)
+	modelPrompt := fmt.Sprintf("%s (%s: %s)", i18n.T(i18n.PromptEnterModel), i18n.T(i18n.MsgDefault), cfg.LLM.Model)
+	cfg.LLM.Model = prompt(reader, modelPrompt, cfg.LLM.Model)
+	
+	apiBasePrompt := fmt.Sprintf("%s (%s: %s)", i18n.T(i18n.PromptEnterAPIBase), i18n.T(i18n.MsgDefault), cfg.LLM.APIBase)
+	cfg.LLM.APIBase = prompt(reader, apiBasePrompt, cfg.LLM.APIBase)
 
 	return nil
 }
 
 func configureOtherSettings(reader *bufio.Reader, cfg *config.Config) error {
-	fmt.Println("\n--- 其他设置 ---")
-	cfg.Safety.EnableChecks = promptBool(reader, "是否启用危险命令安全检查？", true)
-	cfg.History.Enabled = promptBool(reader, "是否启用历史记录？", true)
+	fmt.Println("\n" + i18n.T(i18n.MsgOtherSettings))
+	cfg.Safety.EnableChecks = promptBool(reader, i18n.T(i18n.PromptEnableCheck), true)
+	cfg.History.Enabled = promptBool(reader, i18n.T(i18n.PromptEnableHistory), true)
 	return nil
 }
 
 func saveConfig(cfg *config.Config, configPath string) error {
-	fmt.Println("\n正在保存配置...")
+	fmt.Println("\n" + i18n.T(i18n.MsgSavingConfig))
 	if err := cfg.Save(configPath); err != nil {
-		return fmt.Errorf("保存配置失败: %w", err)
+		return fmt.Errorf("%s: %w", i18n.T(i18n.ErrSaveConfig), err)
 	}
 
-	fmt.Printf("配置已成功保存到 %s\n", configPath)
-	fmt.Println("现在您可以开始使用 aicli 了！")
-	fmt.Println("示例: aicli \"查询我的公网IP\"")
+	fmt.Println(i18n.T(i18n.MsgConfigSaved, configPath))
+	fmt.Println(i18n.T(i18n.MsgNowCanUse))
+	fmt.Println(i18n.T(i18n.MsgExampleUsage))
 
 	return nil
 }
