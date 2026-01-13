@@ -121,15 +121,15 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 
 	execStartTime := time.Now()
 	
-	// 使用交互式执行，实时显示输出
-	err = a.executor.ExecuteInteractive(command, stdin)
+	// 使用支持输出捕获的执行方式，同时保持实时显示
+	output, err := a.executor.ExecuteWithOutput(command, stdin)
 	execTime := time.Since(execStartTime)
 
-	// 保存历史记录（交互模式下没有捕获的输出）
-	a.saveHistory(input, command, "", err)
+	// 保存历史记录
+	a.saveHistory(input, command, output, err)
 
 	if err != nil {
-		return "", fmt.Errorf("%s: %w", i18n.T(i18n.ErrExecuteFailed), err)
+		return output, fmt.Errorf("%s: %w", i18n.T(i18n.ErrExecuteFailed), err)
 	}
 
 	// 详细模式：显示执行时间
@@ -138,7 +138,7 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 		fmt.Fprintf(os.Stderr, "%s: %v\n", i18n.T(i18n.VerboseTotalTime), translateTime+execTime)
 	}
 
-	return "", nil
+	return output, nil
 }
 
 // handleDangerousCommand 处理危险命令的安全检查和确认
