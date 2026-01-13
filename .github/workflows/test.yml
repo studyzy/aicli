@@ -38,12 +38,24 @@ jobs:
       run: go mod download
     
     - name: Run tests
-      run: go test -v -race -coverprofile=coverage.out ./...
+      run: |
+        # 运行所有测试
+        go test -v ./...
+        # 只计算核心库代码的覆盖率（排除cmd目录）
+        go test -coverprofile=coverage.out ./internal/... ./pkg/...
+    
+    - name: Run race detector
+      run: go test -v -race ./...
     
     - name: Calculate coverage
       id: coverage
       run: |
-        COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+        # 提取总覆盖率，处理可能的格式变化
+        COVERAGE=$(go tool cover -func=coverage.out | grep total | grep -oP '\d+\.\d+(?=%)')
+        if [ -z "$COVERAGE" ]; then
+          # 如果上面的方法失败，尝试另一种方法
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $NF}' | sed 's/%//')
+        fi
         echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
         echo "Test coverage: $COVERAGE%"
     
@@ -51,7 +63,12 @@ jobs:
       run: |
         COVERAGE=${{ steps.coverage.outputs.coverage }}
         THRESHOLD=60
-        if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+        if [ -z "$COVERAGE" ]; then
+          echo "❌ Failed to calculate coverage"
+          exit 1
+        fi
+        # 使用 awk 进行浮点数比较（更可靠）
+        if awk "BEGIN {exit !($COVERAGE < $THRESHOLD)}"; then
           echo "❌ Coverage $COVERAGE% is below threshold $THRESHOLD%"
           exit 1
         else

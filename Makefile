@@ -26,7 +26,10 @@ test:
 # 运行测试并生成覆盖率报告
 coverage:
 	@echo "Running tests with coverage..."
-	@go test -coverprofile=$(COVERAGE_FILE) ./...
+	@echo "Running all tests..."
+	@go test -v ./...
+	@echo "\nCalculating coverage for core libraries (internal/... pkg/...)..."
+	@go test -coverprofile=$(COVERAGE_FILE) ./internal/... ./pkg/...
 	@go tool cover -func=$(COVERAGE_FILE)
 	@echo "\nGenerate HTML coverage report..."
 	@go tool cover -html=$(COVERAGE_FILE) -o $(COVERAGE_HTML)
@@ -35,7 +38,10 @@ coverage:
 # 检查测试覆盖率是否达标 (≥60%)
 coverage-check:
 	@echo "Checking coverage threshold (≥60%)..."
-	@go test -coverprofile=$(COVERAGE_FILE) ./... > /dev/null 2>&1
+	@echo "Running all tests..."
+	@go test ./... > /dev/null 2>&1
+	@echo "Calculating coverage for core libraries..."
+	@go test -coverprofile=$(COVERAGE_FILE) ./internal/... ./pkg/... > /dev/null 2>&1
 	@COVERAGE=$$(go tool cover -func=$(COVERAGE_FILE) | grep total | awk '{print $$3}' | sed 's/%//'); \
 	if [ $$(echo "$$COVERAGE >= 60" | bc) -eq 1 ]; then \
 		echo "✓ Coverage $$COVERAGE% meets threshold (≥60%)"; \

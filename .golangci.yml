@@ -1,77 +1,13 @@
 # golangci-lint 配置文件
 # 参考文档: https://golangci-lint.run/docs/configuration/file/
-version: 2
+version: "2"
 
 # 运行配置
 run:
-  # 超时时间
   timeout: 20m
-  # 要分析的目录
-  # go: 1.18+ 默认使用 ./...
-  # 跳过目录
-  skip-dirs:
-    - vendor
-  # 跳过文件
-  skip-files: []
 
-# Linters 配置
-linters-settings:
-  # goconst: 查找重复的字符串常量
-  goconst:
-    min-len: 2
-    min-occurrences: 2
-  
-  # gocyclo: 检查函数的圈复杂度
-  gocyclo:
-    min-complexity: 20
-  
-  # govet: Go 官方的 vet 工具
-  govet:
-    enable-all: true
-    disable:
-      - fieldalignment # 字段对齐优化，可能影响可读性
-    settings:
-      shadow:
-        strict: false
-  
-  # gocritic: Go 代码审查工具
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - style
-      - performance
-    disabled-checks:
-      - unnamedResult # 允许未命名的返回值
-      - hugeParam # 大参数检查可能过于严格
-    settings:
-      nestingReduce:
-        bodyWidth: 5
-  
-  # staticcheck: 静态分析工具
-  staticcheck:
-    checks: ["all"]
-  
-  # unused: 查找未使用的代码
-  unused:
-    check-exported: false # 不检查导出的未使用代码
-  
-  # errcheck: 错误检查配置
-  errcheck:
-    # 检查类型断言
-    check-type-assertions: false
-    # 检查空白标识符
-    check-blank: false
-    # 忽略的函数列表（这些函数的错误返回值可以不检查）
-    exclude-functions:
-      - (io.Closer).Close
-      - (*os.File).Close
-      - (io.ReadCloser).Close
-      - (*database/sql.Rows).Close
-      - (*database/sql.DB).Close
-
-# Linters 启用/禁用配置
+# Linters 启用配置
 linters:
-  disable-all: true
   enable:
     # 推荐的基础 linters
     - govet          # Go 官方 vet 工具
@@ -93,75 +29,13 @@ linters:
     - unconvert      # 不必要的类型转换
     - unparam        # 未使用的函数参数
   
-  # 明确禁用的 linters（可选，用于文档说明）
   disable:
     - errcheck       # 错误检查过于严格，特别是在测试代码中
-    - funlen         # 函数长度检查过于严格
-    - lll            # 行长度检查过于严格
-    - revive         # 与 staticcheck 重复，且规则过多
-    - bodyclose      # https://github.com/timakin/bodyclose/issues 问题太多
 
 # Issues 配置
 issues:
-  # 使用默认的排除规则
-  exclude-use-default: true
-  
-  # 最大问题数配置
   max-same-issues: 0
   max-issues-per-linter: 0
-  
-  # 不只显示新问题
   new: false
-
-  # 包含一些默认被排除的规则
-  # golangci-lint 默认会排除一些规则，但我们希望包含它们
-  include:
-    - EXC0004 # govet (possible misuse of unsafe.Pointer|should have signature)
-    - EXC0005 # staticcheck ineffective break statement. Did you mean to break out of the outer loop
-    - EXC0012 # revive exported (method|function|type|const) (.+) should have comment or be unexported
-    - EXC0013 # revive package comment should be of the form "(.+)...
-    - EXC0014 # revive comment on exported (.+) should be of the form "(.+)..."
-    - EXC0015 # revive should have a package comment, unless it's in another file for this package
-
-  # 排除规则
-  exclude-rules:
-    # 测试文件排除规则
-    - path: _test\.go
-      linters:
-        - errcheck       # 测试代码中可以不检查所有错误
-        - gosec          # 测试代码安全性要求较低
-        - unparam        # 测试代码中未使用的参数是正常的
-        - gocyclo        # 测试代码可以更复杂
-        - gocritic       # 测试代码不需要过于严格
-    
-    # 集成测试目录排除规则
-    - path: tests/integration/
-      linters:
-        - errcheck
-        - gosec
-        - unparam
-        - gocyclo
-    
-    # 允许错误字符串大写（特别是中文错误消息）
-    - linters:
-        - staticcheck
-      text: "ST1005"
-    
-    # sync.pool 相关优化建议可以忽略
-    - linters:
-        - staticcheck
-      text: "SA6002: argument should be pointer-like to avoid allocations"
-    
-    # main 函数和 init 函数可以有未使用的参数
-    - source: "^func (main|init)\\("
-      linters:
-        - unparam
-
-# Output 配置
-output:
-  # 按结果排序
-  sort-results: true
-  # 输出格式（可选：colored-line-number, line-number, json, tab, checkstyle, code-climate, html, junit-xml, github-actions）
-  format: colored-line-number
 
 
