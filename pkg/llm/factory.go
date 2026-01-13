@@ -64,7 +64,7 @@ func newOpenAIFromConfig(cfg *config.Config) (Provider, error) {
 // newAnthropicFromConfig 从配置创建 Anthropic Provider
 func newAnthropicFromConfig(cfg *config.Config) (Provider, error) {
 	if cfg.LLM.APIKey == "" {
-		return nil, fmt.Errorf("Anthropic API 密钥未配置")
+		return nil, fmt.Errorf("anthropic API 密钥未配置")
 	}
 
 	model := cfg.LLM.Model

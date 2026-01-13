@@ -143,6 +143,26 @@ const (
 	InitLong  = "init.long"
 )
 
+// Completion 命令键
+const (
+	CompletionShort = "completion.short"
+)
+
+// Help 命令键
+const (
+	HelpShort = "help.short"
+)
+
+// Version flag 键
+const (
+	VersionShort = "version.short"
+)
+
+// Help flag 键
+const (
+	HelpFlag = "help.flag"
+)
+
 // 配置向导选项键
 const (
 	InitProviderOpenAI     = "init.provider_openai"

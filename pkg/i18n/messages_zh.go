@@ -132,6 +132,18 @@ var messagesZh = map[string]string{
 	InitShort: "初始化配置",
 	InitLong:  "引导用户设置 LLM 配置并生成配置文件 ~/.aicli.json",
 
+	// Completion 命令
+	CompletionShort: "为指定的 shell 生成自动补全脚本",
+
+	// Help 命令
+	HelpShort: "显示任何命令的帮助信息",
+
+	// Version flag
+	VersionShort: "显示版本信息",
+
+	// Help flag
+	HelpFlag: "显示帮助信息",
+
 	// 配置向导选项
 	InitProviderOpenAI:    "1. OpenAI (GPT-4, GPT-3.5)",
 	InitProviderAnthropic: "2. Anthropic (Claude)",

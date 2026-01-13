@@ -24,6 +24,22 @@ var (
 )
 
 func main() {
+	// 早期初始化i18n(用于--help等不进入run的场景)
+	// 使用环境变量检测,配置文件会在run中重新初始化
+	i18n.Init(nil) // nil表示仅使用环境变量和默认值
+	
+	// 设置自定义 Help 函数，在显示帮助前更新命令描述
+	// 这样可以确保 Cobra 自动生成的命令（如 completion、help）也能被国际化
+	originalHelpFunc := rootCmd.HelpFunc()
+	rootCmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
+		// 在显示帮助前更新所有命令的描述
+		updateCommandDescriptions(rootCmd)
+		originalHelpFunc(cmd, args)
+	})
+	
+	// 更新rootCmd描述（第一次，在子命令添加之前）
+	updateCommandDescriptions(rootCmd)
+	
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "%s: %v\n", i18n.T("label.error"), err)
 		os.Exit(1)
@@ -191,6 +207,18 @@ func init() {
 
 	// 设置版本模板
 	rootCmd.SetVersionTemplate(`{{printf "aicli version %s\n" .Version}}`)
+	
+	// 添加 completion 命令（Cobra 不会自动添加，需要手动添加）
+	rootCmd.AddCommand(createCompletionCmd())
+}
+
+// createCompletionCmd 创建 completion 命令
+func createCompletionCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "completion",
+		Short: "", // 将在 updateCommandDescriptions 中设置
+		Long:  "", // 将在 updateCommandDescriptions 中设置
+	}
 }
 
 // getHistoryPath 获取历史记录文件路径
@@ -299,9 +327,27 @@ func retryCommand(id int) error {
 
 // updateCommandDescriptions 更新命令描述为对应语言
 func updateCommandDescriptions(cmd *cobra.Command) {
-	cmd.Use = i18n.T(i18n.CobraUse)
+	// 更新根命令描述（不更新 Use，因为会导致 Cobra 把它当成子命令）
 	cmd.Short = i18n.T(i18n.CobraShort)
 	cmd.Long = i18n.T(i18n.CobraLong)
+	
+	// 更新子命令描述（包括 Cobra 自动生成的命令）
+	for _, subCmd := range cmd.Commands() {
+		switch subCmd.Name() {
+		case "init":
+			subCmd.Use = i18n.T(i18n.InitUse)
+			subCmd.Short = i18n.T(i18n.InitShort)
+			subCmd.Long = i18n.T(i18n.InitLong)
+		case "completion":
+			subCmd.Short = i18n.T(i18n.CompletionShort)
+		case "help":
+			subCmd.Short = i18n.T(i18n.HelpShort)
+		}
+		// 递归更新子命令的子命令
+		if subCmd.HasSubCommands() {
+			updateCommandDescriptions(subCmd)
+		}
+	}
 	
 	// 更新标志说明
 	if flag := cmd.PersistentFlags().Lookup("config"); flag != nil {
@@ -324,5 +370,11 @@ func updateCommandDescriptions(cmd *cobra.Command) {
 	}
 	if flag := cmd.Flags().Lookup("retry"); flag != nil {
 		flag.Usage = i18n.T(i18n.CobraFlagRetry)
+	}
+	if flag := cmd.Flags().Lookup("version"); flag != nil {
+		flag.Usage = i18n.T(i18n.VersionShort)
+	}
+	if flag := cmd.Flags().Lookup("help"); flag != nil {
+		flag.Usage = i18n.T(i18n.HelpFlag)
 	}
 }

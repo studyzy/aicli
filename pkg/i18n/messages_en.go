@@ -132,6 +132,18 @@ Examples:
 	InitShort: "Initialize configuration",
 	InitLong:  "Guide user to set up LLM configuration and generate configuration file ~/.aicli.json",
 
+	// Completion command
+	CompletionShort: "Generate the autocompletion script for the specified shell",
+
+	// Help command
+	HelpShort: "Help about any command",
+
+	// Version flag
+	VersionShort: "version for aicli",
+
+	// Help flag
+	HelpFlag: "help for aicli",
+
 	// Configuration wizard options
 	InitProviderOpenAI:    "1. OpenAI (GPT-4, GPT-3.5)",
 	InitProviderAnthropic: "2. Anthropic (Claude)",

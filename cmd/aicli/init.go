@@ -21,8 +21,8 @@ const (
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "初始化配置 / Initialize configuration",
-	Long:  "引导用户设置 LLM 配置并生成配置文件 ~/.aicli.json / Guide user to set up LLM configuration",
+	Short: "", // 将在 main 中通过 updateCommandDescriptions 设置
+	Long:  "", // 将在 main 中通过 updateCommandDescriptions 设置
 	RunE:  runInit,
 }
 
