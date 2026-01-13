@@ -17,7 +17,7 @@ import (
 )
 
 // version 是当前版本号
-const version = "0.1.0-dev"
+const version = "1.0.0"
 
 var (
 	flags = app.NewFlags()
@@ -201,6 +201,7 @@ func init() {
 	// 本地标志（仅根命令可用）
 	rootCmd.Flags().BoolVarP(&flags.DryRun, "dry-run", "n", flags.DryRun, "仅显示命令不执行")
 	rootCmd.Flags().BoolVarP(&flags.Force, "force", "f", flags.Force, "强制执行，跳过确认")
+	rootCmd.Flags().BoolVarP(&flags.Quiet, "quiet", "q", flags.Quiet, "静默模式，不显示翻译后的命令")
 	rootCmd.Flags().BoolVar(&flags.NoSendStdin, "no-send-stdin", flags.NoSendStdin, "不将 stdin 数据发送到 LLM")
 	rootCmd.Flags().BoolVar(&flags.History, "history", flags.History, "显示历史记录")
 	rootCmd.Flags().IntVar(&flags.Retry, "retry", flags.Retry, "重新执行历史命令 ID")
@@ -361,6 +362,9 @@ func updateCommandDescriptions(cmd *cobra.Command) {
 	}
 	if flag := cmd.Flags().Lookup("force"); flag != nil {
 		flag.Usage = i18n.T(i18n.CobraFlagForce)
+	}
+	if flag := cmd.Flags().Lookup("quiet"); flag != nil {
+		flag.Usage = i18n.T(i18n.CobraFlagQuiet)
 	}
 	if flag := cmd.Flags().Lookup("no-send-stdin"); flag != nil {
 		flag.Usage = i18n.T(i18n.CobraFlagNoSendStdin)

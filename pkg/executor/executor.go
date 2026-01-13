@@ -4,6 +4,8 @@ package executor
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -77,6 +79,82 @@ func (e *Executor) Execute(command string, stdin string) (string, error) {
 	// if errOutput != "" {
 	// 	output = output + errOutput
 	// }
+
+	return output, nil
+}
+
+// ExecuteInteractive 以交互模式执行命令，实时显示输出
+// command: 要执行的命令字符串
+// stdin: 标准输入数据（可选）
+// 返回: 错误信息（输出会直接打印到终端）
+func (e *Executor) ExecuteInteractive(command string, stdin string) error {
+	if command == "" {
+		return fmt.Errorf("命令不能为空")
+	}
+
+	// 构建命令
+	args := make([]string, len(e.shell.Args))
+	copy(args, e.shell.Args)
+	args = append(args, command)
+	cmd := exec.Command(e.shell.Path, args...)
+
+	// 设置标准输入
+	if stdin != "" {
+		cmd.Stdin = strings.NewReader(stdin)
+	} else {
+		cmd.Stdin = os.Stdin
+	}
+
+	// 直接连接到当前进程的输出流，实现实时输出
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	// 执行命令
+	return cmd.Run()
+}
+
+// ExecuteWithOutput 执行命令并同时返回输出和实时显示
+// command: 要执行的命令字符串
+// stdin: 标准输入数据（可选）
+// 返回: 命令输出和错误
+func (e *Executor) ExecuteWithOutput(command string, stdin string) (string, error) {
+	if command == "" {
+		return "", fmt.Errorf("命令不能为空")
+	}
+
+	// 构建命令
+	args := make([]string, len(e.shell.Args))
+	copy(args, e.shell.Args)
+	args = append(args, command)
+	cmd := exec.Command(e.shell.Path, args...)
+
+	// 设置标准输入
+	if stdin != "" {
+		cmd.Stdin = strings.NewReader(stdin)
+	}
+
+	// 创建输出缓冲区
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+
+	// 使用 MultiWriter 同时写入缓冲区和终端
+	cmd.Stdout = io.MultiWriter(&stdout, os.Stdout)
+	cmd.Stderr = io.MultiWriter(&stderr, os.Stderr)
+
+	// 执行命令
+	err := cmd.Run()
+
+	// 获取输出
+	output := stdout.String()
+	errOutput := stderr.String()
+
+	// 如果有错误，合并 stderr 到错误信息
+	if err != nil {
+		if errOutput != "" {
+			return output, fmt.Errorf("命令执行失败: %w\n%s", err, errOutput)
+		}
+		return output, fmt.Errorf("命令执行失败: %w", err)
+	}
 
 	return output, nil
 }

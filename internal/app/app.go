@@ -96,6 +96,11 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 		fmt.Fprintf(os.Stderr, "%s: %v\n", i18n.T(i18n.VerboseTranslateTime), translateTime)
 	}
 
+	// 默认显示翻译后的命令到 stderr（除非开启了 quiet 模式）
+	if !flags.Quiet && !flags.Verbose {
+		fmt.Fprintf(os.Stderr, "%s\n", i18n.T(i18n.MsgTranslatedCommand, command))
+	}
+
 	// 安全检查
 	if a.safety != nil && a.safety.IsEnabled() {
 		if safetyErr := a.handleDangerousCommand(command, stdin, flags); safetyErr != nil {
@@ -115,14 +120,16 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 	}
 
 	execStartTime := time.Now()
-	output, err := a.executor.Execute(command, stdin)
+	
+	// 使用交互式执行，实时显示输出
+	err = a.executor.ExecuteInteractive(command, stdin)
 	execTime := time.Since(execStartTime)
 
-	// 保存历史记录
-	a.saveHistory(input, command, output, err)
+	// 保存历史记录（交互模式下没有捕获的输出）
+	a.saveHistory(input, command, "", err)
 
 	if err != nil {
-		return output, fmt.Errorf("%s: %w", i18n.T(i18n.ErrExecuteFailed), err)
+		return "", fmt.Errorf("%s: %w", i18n.T(i18n.ErrExecuteFailed), err)
 	}
 
 	// 详细模式：显示执行时间
@@ -131,7 +138,7 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 		fmt.Fprintf(os.Stderr, "%s: %v\n", i18n.T(i18n.VerboseTotalTime), translateTime+execTime)
 	}
 
-	return output, nil
+	return "", nil
 }
 
 // handleDangerousCommand 处理危险命令的安全检查和确认

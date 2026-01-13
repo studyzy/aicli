@@ -87,10 +87,12 @@ export AICLI_API_KEY="your-api-key-here"
 ```bash
 # Example 1: search within a file
 aicli "find ERROR in log.txt"
+# 💡 Executing: grep "ERROR" log.txt
 # -> grep "ERROR" log.txt
 
 # Example 2: file listing
 aicli "show all .txt files in current directory"
+# 💡 Executing: ls *.txt
 # -> ls *.txt (or find . -name "*.txt")
 
 # Example 3: pipe input through aicli
@@ -106,6 +108,8 @@ aicli --history
 aicli --retry 3
 ```
 
+**Note**: By default, AICLI displays the translated command before execution (output to stderr). This helps you learn the actual shell commands. The command prompt won't interfere with pipes or output redirection.
+
 ### Common CLI options
 
 ```bash
@@ -118,8 +122,46 @@ aicli --verbose "find all go files"
 # Skip safety confirmation (use carefully)
 aicli --force "delete all temp files"
 
+# Quiet mode: hide the translated command (only show output)
+aicli --quiet "list files"
+# or use the short form
+aicli -q "list files"
+
 # Do not send stdin to the LLM (privacy)
 cat sensitive.txt | aicli --no-send-stdin "count lines"
+```
+
+### Understanding output streams
+
+AICLI follows Unix conventions for output streams:
+
+- **stdout**: Command execution results (for piping to other commands)
+- **stderr**: Status messages, translated commands, errors
+
+```bash
+# Example: Command prompt goes to stderr, results go to stdout
+$ aicli "list numbers 1 to 5"
+💡 Executing: seq 1 5    # This is on stderr
+1                         # These lines are on stdout
+2
+3
+4
+5
+
+# Piping works correctly because only stdout is passed
+$ aicli "list numbers 1 to 5" | aicli "calculate sum"
+💡 Executing: seq 1 5           # stderr: visible to user
+💡 Executing: awk '{s+=$1} END {print s}'  # stderr: visible to user
+15                              # stdout: piped between commands
+
+# Hide command prompts if needed
+$ aicli -q "list numbers 1 to 5" | wc -l
+5                               # Clean output, no prompts
+
+# Redirect only output, keep command prompts visible
+$ aicli "list files" > output.txt
+💡 Executing: ls                # Still visible on screen
+                                 # File list saved to output.txt
 ```
 
 ## LLM providers

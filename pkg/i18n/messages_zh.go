@@ -50,6 +50,7 @@ var messagesZh = map[string]string{
 	MsgInvalidChoice:      "无效的选择,默认使用 OpenAI",
 	MsgDefaultUseOpenAI:   "无效的选择,默认使用 OpenAI",
 	MsgDefault:            "默认",
+	MsgTranslatedCommand:  "💡 执行命令: %s",
 
 	// 警告信息
 	WarnDangerousCommand: "检测到潜在危险命令!",
@@ -126,6 +127,7 @@ var messagesZh = map[string]string{
 	CobraFlagNoSendStdin: "不将 stdin 数据发送到 LLM",
 	CobraFlagHistory:     "显示历史记录",
 	CobraFlagRetry:       "重新执行历史命令 ID",
+	CobraFlagQuiet:       "静默模式,不显示翻译后的命令",
 
 	// Init 命令
 	InitUse:   "init",

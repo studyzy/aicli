@@ -50,6 +50,7 @@ var messagesEn = map[string]string{
 	MsgInvalidChoice:      "Invalid choice, defaulting to OpenAI",
 	MsgDefaultUseOpenAI:   "Invalid choice, defaulting to OpenAI",
 	MsgDefault:            "default",
+	MsgTranslatedCommand:  "💡 Executing: %s",
 
 	// Warnings
 	WarnDangerousCommand: "Potentially dangerous command detected!",
@@ -126,6 +127,7 @@ Examples:
 	CobraFlagNoSendStdin: "Do not send stdin data to LLM",
 	CobraFlagHistory:     "Show history records",
 	CobraFlagRetry:       "Retry history command ID",
+	CobraFlagQuiet:       "Quiet mode, do not show translated command",
 
 	// Init command
 	InitUse:   "init",

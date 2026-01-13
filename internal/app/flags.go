@@ -15,6 +15,9 @@ type Flags struct {
 	// NoSendStdin 不将 stdin 数据发送到 LLM
 	NoSendStdin bool
 
+	// Quiet 静默模式，不显示翻译后的命令
+	Quiet bool
+
 	// Config 配置文件路径
 	Config string
 
@@ -35,6 +38,7 @@ func NewFlags() *Flags {
 		Verbose:     false,
 		Force:       false,
 		NoSendStdin: false,
+		Quiet:       false,
 		Config:      "~/.aicli.json",
 		History:     false,
 		Retry:       -1,

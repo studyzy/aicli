@@ -37,24 +37,25 @@ const (
 
 // 界面文本键
 const (
-	MsgHistoryEmpty      = "msg.history_empty"
-	MsgHistoryCount      = "msg.history_count"
-	MsgNoHistory         = "msg.no_history"
-	MsgConfigSaved       = "msg.config_saved"
-	MsgConfigNotExist    = "msg.config_not_exist"
-	MsgConfigHint        = "msg.config_hint"
-	MsgRetryCommand      = "msg.retry_command"
-	MsgWelcomeInit       = "msg.welcome_init"
-	MsgInitGuide         = "msg.init_guide"
-	MsgSavingConfig      = "msg.saving_config"
-	MsgNowCanUse         = "msg.now_can_use"
-	MsgExampleUsage      = "msg.example_usage"
+	MsgHistoryEmpty       = "msg.history_empty"
+	MsgHistoryCount       = "msg.history_count"
+	MsgNoHistory          = "msg.no_history"
+	MsgConfigSaved        = "msg.config_saved"
+	MsgConfigNotExist     = "msg.config_not_exist"
+	MsgConfigHint         = "msg.config_hint"
+	MsgRetryCommand       = "msg.retry_command"
+	MsgWelcomeInit        = "msg.welcome_init"
+	MsgInitGuide          = "msg.init_guide"
+	MsgSavingConfig       = "msg.saving_config"
+	MsgNowCanUse          = "msg.now_can_use"
+	MsgExampleUsage       = "msg.example_usage"
 	MsgOperationCancelled = "msg.operation_cancelled"
-	MsgOtherSettings     = "msg.other_settings"
-	MsgConfigExists      = "msg.config_exists"
-	MsgInvalidChoice     = "msg.invalid_choice"
-	MsgDefaultUseOpenAI  = "msg.default_use_openai"
-	MsgDefault           = "msg.default"
+	MsgOtherSettings      = "msg.other_settings"
+	MsgConfigExists       = "msg.config_exists"
+	MsgInvalidChoice      = "msg.invalid_choice"
+	MsgDefaultUseOpenAI   = "msg.default_use_openai"
+	MsgDefault            = "msg.default"
+	MsgTranslatedCommand  = "msg.translated_command"
 )
 
 // 警告信息键
@@ -124,16 +125,17 @@ const (
 
 // Cobra 命令描述键
 const (
-	CobraUse              = "cobra.use"
-	CobraShort            = "cobra.short"
-	CobraLong             = "cobra.long"
-	CobraFlagConfig       = "cobra.flag_config"
-	CobraFlagVerbose      = "cobra.flag_verbose"
-	CobraFlagDryRun       = "cobra.flag_dry_run"
-	CobraFlagForce        = "cobra.flag_force"
-	CobraFlagNoSendStdin  = "cobra.flag_no_send_stdin"
-	CobraFlagHistory      = "cobra.flag_history"
-	CobraFlagRetry        = "cobra.flag_retry"
+	CobraUse             = "cobra.use"
+	CobraShort           = "cobra.short"
+	CobraLong            = "cobra.long"
+	CobraFlagConfig      = "cobra.flag_config"
+	CobraFlagVerbose     = "cobra.flag_verbose"
+	CobraFlagDryRun      = "cobra.flag_dry_run"
+	CobraFlagForce       = "cobra.flag_force"
+	CobraFlagNoSendStdin = "cobra.flag_no_send_stdin"
+	CobraFlagHistory     = "cobra.flag_history"
+	CobraFlagRetry       = "cobra.flag_retry"
+	CobraFlagQuiet       = "cobra.flag_quiet"
 )
 
 // Init 命令键
