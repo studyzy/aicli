@@ -185,6 +185,22 @@ func TestValidate(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "内置模型不需要 API 密钥",
+			config: &Config{
+				Version: "1.0",
+				LLM: LLMConfig{
+					Provider: "builtin",
+					APIKey:   "",
+					Model:    "builtin-trial",
+					Timeout:  10,
+				},
+				Execution: ExecutionConfig{
+					Timeout: 30,
+				},
+			},
+			wantErr: false,
+		},
+		{
 			name: "缺少提供商应该无效",
 			config: &Config{
 				Version: "1.0",

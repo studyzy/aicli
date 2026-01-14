@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	providerLocal = "local"
+	providerLocal   = "local"
+	providerBuiltin = "builtin"
 )
 
 // Config 是应用程序的主配置结构体
@@ -140,8 +141,8 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("LLM 提供商不能为空")
 	}
 
-	// 对于非本地模型，需要 API 密钥
-	if c.LLM.Provider != providerLocal && c.LLM.APIKey == "" {
+	// 对于非本地模型和非内置模型，需要 API 密钥
+	if c.LLM.Provider != providerLocal && c.LLM.Provider != providerBuiltin && c.LLM.APIKey == "" {
 		return fmt.Errorf("LLM API 密钥不能为空（或设置环境变量 AICLI_API_KEY）")
 	}
 

@@ -25,6 +25,9 @@ func NewProvider(cfg *config.Config) (Provider, error) {
 	providerType := strings.ToLower(cfg.LLM.Provider)
 
 	switch providerType {
+	case providerBuiltin:
+		return NewBuiltinProvider(), nil
+
 	case providerOpenAI:
 		return newOpenAIFromConfig(cfg)
 
@@ -49,6 +52,11 @@ func NewProvider(cfg *config.Config) (Provider, error) {
 
 // newOpenAIFromConfig 从配置创建 OpenAI Provider
 func newOpenAIFromConfig(cfg *config.Config) (Provider, error) {
+	// 内置 provider 不需要 API Key
+	if cfg.LLM.Provider == providerBuiltin {
+		return NewBuiltinProvider(), nil
+	}
+	
 	if cfg.LLM.APIKey == "" {
 		return nil, fmt.Errorf("OpenAI API 密钥未配置")
 	}
@@ -93,6 +101,7 @@ func newLocalModelFromConfig(cfg *config.Config) (Provider, error) {
 // GetSupportedProviders 返回所有支持的 Provider 列表
 func GetSupportedProviders() []string {
 	return []string{
+		"builtin",
 		"openai",
 		"anthropic",
 		"claude",

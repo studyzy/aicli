@@ -167,6 +167,7 @@ const (
 
 // 配置向导选项键
 const (
+	InitProviderBuiltin    = "init.provider_builtin"
 	InitProviderOpenAI     = "init.provider_openai"
 	InitProviderAnthropic  = "init.provider_anthropic"
 	InitProviderLocal      = "init.provider_local"
