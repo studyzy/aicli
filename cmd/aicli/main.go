@@ -174,10 +174,6 @@ func loadConfig() (*config.Config, error) {
 
 	// 如果配置文件不存在，使用默认配置
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		// 提示用户初始化 (这里还未初始化i18n,使用双语提示)
-		fmt.Fprintf(os.Stderr, "Note / 提示: Configuration file / 配置文件 %s does not exist / 不存在。\n", configPath)
-		fmt.Fprintf(os.Stderr, "You can run / 您可以运行 'aicli init' for quick setup / 来快速设置配置。\n\n")
-
 		if flags.Verbose {
 			fmt.Fprintf(os.Stderr, "Using default configuration / 使用默认配置\n")
 		}

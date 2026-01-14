@@ -51,6 +51,7 @@ var messagesZh = map[string]string{
 	MsgDefaultUseOpenAI:   "无效的选择,默认使用 OpenAI",
 	MsgDefault:            "默认",
 	MsgTranslatedCommand:  "💡 执行命令: %s",
+	MsgTrialAPINotice:     "⚠️  当前使用的是内嵌（试用）API，请运行 'aicli init' 来配置您自己的 LLM API。",
 
 	// 警告信息
 	WarnDangerousCommand: "检测到潜在危险命令!",
@@ -147,10 +148,9 @@ var messagesZh = map[string]string{
 	HelpFlag: "显示帮助信息",
 
 	// 配置向导选项
-	InitProviderBuiltin:   "1. 内置（试用）- 无需配置，开箱即用",
-	InitProviderOpenAI:    "2. OpenAI (GPT-4, GPT-3.5)",
-	InitProviderAnthropic: "3. Anthropic (Claude)",
-	InitProviderLocal:     "4. Local (Ollama, LocalAI)",
-	InitProviderDeepSeek:  "5. DeepSeek (深度求索)",
-	InitProviderOther:     "6. Other (兼容 OpenAI 协议)",
+	InitProviderOpenAI:    "1. OpenAI (GPT-4, GPT-3.5)",
+	InitProviderAnthropic: "2. Anthropic (Claude)",
+	InitProviderLocal:     "3. Local (Ollama, LocalAI)",
+	InitProviderDeepSeek:  "4. DeepSeek (深度求索)",
+	InitProviderOther:     "5. Other (兼容 OpenAI 协议)",
 }

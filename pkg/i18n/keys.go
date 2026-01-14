@@ -56,6 +56,7 @@ const (
 	MsgDefaultUseOpenAI   = "msg.default_use_openai"
 	MsgDefault            = "msg.default"
 	MsgTranslatedCommand  = "msg.translated_command"
+	MsgTrialAPINotice     = "msg.trial_api_notice" // 试用 API 提示
 )
 
 // 警告信息键
@@ -167,10 +168,9 @@ const (
 
 // 配置向导选项键
 const (
-	InitProviderBuiltin    = "init.provider_builtin"
-	InitProviderOpenAI     = "init.provider_openai"
-	InitProviderAnthropic  = "init.provider_anthropic"
-	InitProviderLocal      = "init.provider_local"
-	InitProviderDeepSeek   = "init.provider_deepseek"
-	InitProviderOther      = "init.provider_other"
+	InitProviderOpenAI    = "init.provider_openai"
+	InitProviderAnthropic = "init.provider_anthropic"
+	InitProviderLocal     = "init.provider_local"
+	InitProviderDeepSeek  = "init.provider_deepseek"
+	InitProviderOther     = "init.provider_other"
 )

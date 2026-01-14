@@ -5,11 +5,11 @@ func Default() *Config {
 	return &Config{
 		Version: "1.0",
 		LLM: LLMConfig{
-			Provider:  "openai",
+			Provider:  "builtin", // 使用内置试用 API
 			APIKey:    "",
-			APIBase:   "https://api.openai.com/v1",
-			Model:     "gpt-4",
-			Timeout:   10,
+			APIBase:   "",
+			Model:     "",
+			Timeout:   30, // 增加超时时间以适应网络延迟
 			MaxTokens: 500,
 		},
 		Execution: ExecutionConfig{

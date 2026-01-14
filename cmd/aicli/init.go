@@ -92,55 +92,46 @@ func checkExistingConfig(reader *bufio.Reader, configPath string) error {
 
 func configureProvider(reader *bufio.Reader, cfg *config.Config) error {
 	fmt.Println(i18n.T(i18n.PromptSelectProvider) + ":")
-	fmt.Println(i18n.T(i18n.InitProviderBuiltin))
 	fmt.Println(i18n.T(i18n.InitProviderOpenAI))
 	fmt.Println(i18n.T(i18n.InitProviderAnthropic))
 	fmt.Println(i18n.T(i18n.InitProviderLocal))
 	fmt.Println(i18n.T(i18n.InitProviderDeepSeek))
 	fmt.Println(i18n.T(i18n.InitProviderOther))
 
-	providerChoice := prompt(reader, i18n.T(i18n.PromptInputChoice)+" [1-6]", "1")
+	providerChoice := prompt(reader, i18n.T(i18n.PromptInputChoice)+" [1-5]", "1")
 
 	switch providerChoice {
 	case "1":
-		cfg.LLM.Provider = providerBuiltin
-		cfg.LLM.Model = "builtin-trial"
-		cfg.LLM.APIBase = ""
-		cfg.LLM.APIKey = ""
-	case "2":
 		cfg.LLM.Provider = providerOpenAI
 		cfg.LLM.Model = "gpt-4"
 		cfg.LLM.APIBase = apiBaseOpenAI
-	case "3":
+	case "2":
 		cfg.LLM.Provider = providerAnthropic
 		cfg.LLM.Model = "claude-3-sonnet-20240229"
 		cfg.LLM.APIBase = "https://api.anthropic.com/v1"
-	case "4":
+	case "3":
 		cfg.LLM.Provider = providerLocal
 		cfg.LLM.Model = "llama2"
 		cfg.LLM.APIBase = "http://localhost:11434"
-	case "5":
+	case "4":
 		cfg.LLM.Provider = providerOpenAI // DeepSeek 兼容 OpenAI
 		cfg.LLM.Model = "deepseek-chat"
 		cfg.LLM.APIBase = "https://api.deepseek.com/v1"
-	case "6":
+	case "5":
 		cfg.LLM.Provider = providerOpenAI
 		cfg.LLM.Model = "gpt-3.5-turbo"
 		cfg.LLM.APIBase = apiBaseOpenAI
 	default:
 		fmt.Println(i18n.T(i18n.MsgDefaultUseOpenAI))
 		cfg.LLM.Provider = providerOpenAI
+		cfg.LLM.Model = "gpt-4"
+		cfg.LLM.APIBase = apiBaseOpenAI
 	}
 
 	return nil
 }
 
 func configureAPI(reader *bufio.Reader, cfg *config.Config) error {
-	// 内置 provider 不需要配置 API
-	if cfg.LLM.Provider == providerBuiltin {
-		return nil
-	}
-	
 	if cfg.LLM.Provider != providerLocal {
 		cfg.LLM.APIKey = prompt(reader, i18n.T(i18n.PromptEnterAPIKey), "")
 		if cfg.LLM.APIKey == "" {

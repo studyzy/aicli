@@ -51,6 +51,7 @@ var messagesEn = map[string]string{
 	MsgDefaultUseOpenAI:   "Invalid choice, defaulting to OpenAI",
 	MsgDefault:            "default",
 	MsgTranslatedCommand:  "💡 Executing: %s",
+	MsgTrialAPINotice:     "⚠️  Using trial API. Please run 'aicli init' to configure your own LLM API.",
 
 	// Warnings
 	WarnDangerousCommand: "Potentially dangerous command detected!",
@@ -147,10 +148,9 @@ Examples:
 	HelpFlag: "help for aicli",
 
 	// Configuration wizard options
-	InitProviderBuiltin:   "1. Built-in (Trial) - No configuration needed, ready to use",
-	InitProviderOpenAI:    "2. OpenAI (GPT-4, GPT-3.5)",
-	InitProviderAnthropic: "3. Anthropic (Claude)",
-	InitProviderLocal:     "4. Local (Ollama, LocalAI)",
-	InitProviderDeepSeek:  "5. DeepSeek",
-	InitProviderOther:     "6. Other (OpenAI-compatible API)",
+	InitProviderOpenAI:    "1. OpenAI (GPT-4, GPT-3.5)",
+	InitProviderAnthropic: "2. Anthropic (Claude)",
+	InitProviderLocal:     "3. Local (Ollama, LocalAI)",
+	InitProviderDeepSeek:  "4. DeepSeek",
+	InitProviderOther:     "5. Other (OpenAI-compatible API)",
 }

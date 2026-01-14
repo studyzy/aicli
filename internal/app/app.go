@@ -99,6 +99,10 @@ func (a *App) Run(input string, stdin string, flags *Flags) (string, error) {
 	// 默认显示翻译后的命令到 stderr（除非开启了 quiet 模式）
 	if !flags.Quiet && !flags.Verbose {
 		fmt.Fprintf(os.Stderr, "%s\n", i18n.T(i18n.MsgTranslatedCommand, command))
+		// 如果使用的是内置试用 API,显示提示信息
+		if a.config.LLM.Provider == "builtin" {
+			fmt.Fprintf(os.Stderr, "%s\n", i18n.T(i18n.MsgTrialAPINotice))
+		}
 	}
 
 	// 安全检查

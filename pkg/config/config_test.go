@@ -18,12 +18,12 @@ func TestDefault(t *testing.T) {
 		t.Errorf("期望版本为 1.0, 实际为 %s", cfg.Version)
 	}
 
-	if cfg.LLM.Provider != providerOpenAI {
-		t.Errorf("期望默认 LLM 提供商为 openai, 实际为 %s", cfg.LLM.Provider)
+	if cfg.LLM.Provider != providerBuiltin {
+		t.Errorf("期望默认 LLM 提供商为 builtin, 实际为 %s", cfg.LLM.Provider)
 	}
 
-	if cfg.LLM.Timeout != 10 {
-		t.Errorf("期望 LLM 超时为 10, 实际为 %d", cfg.LLM.Timeout)
+	if cfg.LLM.Timeout != 30 {
+		t.Errorf("期望 LLM 超时为 30, 实际为 %d", cfg.LLM.Timeout)
 	}
 
 	if cfg.Execution.Timeout != 30 {
@@ -46,8 +46,8 @@ func TestLoadNonExistentFile(t *testing.T) {
 		t.Fatalf("加载不存在的文件应返回默认配置，但返回错误: %v", err)
 	}
 
-	if cfg.LLM.Provider != providerOpenAI {
-		t.Errorf("期望默认提供商为 openai, 实际为 %s", cfg.LLM.Provider)
+	if cfg.LLM.Provider != providerBuiltin {
+		t.Errorf("期望默认提供商为 builtin, 实际为 %s", cfg.LLM.Provider)
 	}
 }
 
@@ -312,8 +312,8 @@ func TestApplyDefaults(t *testing.T) {
 	cfg.applyDefaults()
 
 	// 应该应用默认值
-	if cfg.LLM.Timeout != 10 {
-		t.Errorf("期望默认超时为 10, 实际为 %d", cfg.LLM.Timeout)
+	if cfg.LLM.Timeout != 30 {
+		t.Errorf("期望默认超时为 30, 实际为 %d", cfg.LLM.Timeout)
 	}
 
 	if cfg.LLM.MaxTokens != 500 {
