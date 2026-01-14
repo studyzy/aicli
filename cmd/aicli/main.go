@@ -139,7 +139,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	// 执行应用逻辑
-	output, err := application.Run(input, stdin, flags)
+	_, err = application.Run(input, stdin, flags)
 
 	// 保存历史记录（即使执行失败也保存）
 	if saveErr := hist.Save(historyPath); saveErr != nil && flags.Verbose {
@@ -151,8 +151,8 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// 输出结果
-	fmt.Print(output)
+	// 注意：输出已经在 ExecuteWithOutput 中通过 MultiWriter 实时显示了，
+	// 这里不需要再次打印，否则会导致输出重复
 
 	return nil
 }
@@ -309,7 +309,7 @@ func retryCommand(id int) error {
 	application.SetHistory(hist)
 
 	// 执行命令（使用原始输入重新转换）
-	output, err := application.Run(entry.Input, "", flags)
+	_, err = application.Run(entry.Input, "", flags)
 
 	// 保存历史记录
 	if saveErr := hist.Save(historyPath); saveErr != nil && flags.Verbose {
@@ -320,8 +320,7 @@ func retryCommand(id int) error {
 		return err
 	}
 
-	// 输出结果
-	fmt.Print(output)
+	// 注意：输出已经在 ExecuteWithOutput 中通过 MultiWriter 实时显示了
 
 	return nil
 }
