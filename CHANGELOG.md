@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-01-14
 
 ### Added
+- **Built-in LLM support**: Added built-in LLM as default provider for better out-of-box experience
 - **Real-time command output**: Commands now display their progress and output in real-time instead of waiting until completion
 - **Command display**: By default, translated commands are shown to users (output to stderr) to help them learn shell commands
 - **Quiet mode**: Added `-q/--quiet` flag to suppress command display for clean output in scripts and pipes
@@ -26,10 +27,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced output stream handling (stdout for data, stderr for messages)
 - Updated documentation with detailed examples of output stream behavior
 
+### Fixed
+- Fixed curl download progress display issue - now shows progress bar on same line instead of scrolling
+- Fixed i18n error handling
+- Fixed command output duplication issue
+
 ### Technical Details
 - Added `ExecuteInteractive()` and `ExecuteWithOutput()` methods to executor
 - Command prompts output to stderr by default (can be disabled with `-q`)
 - Real-time output for commands with progress indicators (downloads, installations, etc.)
+- Enhanced TTY detection for proper progress bar rendering
 
 ## [0.1.0-dev] - 2025-12-01
 
