@@ -133,13 +133,31 @@ func (e *Executor) ExecuteWithOutput(command string, stdin string) (string, erro
 		cmd.Stdin = strings.NewReader(stdin)
 	}
 
+	// 检测 stdout 和 stderr 是否连接到终端（TTY）
+	// 如果是 TTY，直接连接以支持进度条等交互式输出
+	// 否则使用 MultiWriter 捕获输出
+	stdoutIsTTY := isTerminal(os.Stdout)
+	stderrIsTTY := isTerminal(os.Stderr)
+
 	// 创建输出缓冲区
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
-	// 使用 MultiWriter 同时写入缓冲区和终端
-	cmd.Stdout = io.MultiWriter(&stdout, os.Stdout)
-	cmd.Stderr = io.MultiWriter(&stderr, os.Stderr)
+	if stdoutIsTTY {
+		// 直接连接到终端，支持进度条等特性
+		cmd.Stdout = os.Stdout
+	} else {
+		// 使用 MultiWriter 同时写入缓冲区和终端
+		cmd.Stdout = io.MultiWriter(&stdout, os.Stdout)
+	}
+
+	if stderrIsTTY {
+		// 直接连接到终端，支持进度条等特性
+		cmd.Stderr = os.Stderr
+	} else {
+		// 使用 MultiWriter 同时写入缓冲区和终端
+		cmd.Stderr = io.MultiWriter(&stderr, os.Stderr)
+	}
 
 	// 执行命令
 	err := cmd.Run()
@@ -157,6 +175,16 @@ func (e *Executor) ExecuteWithOutput(command string, stdin string) (string, erro
 	}
 
 	return output, nil
+}
+
+// isTerminal 检测文件是否是终端（TTY）
+func isTerminal(f *os.File) bool {
+	stat, err := f.Stat()
+	if err != nil {
+		return false
+	}
+	// 检查文件模式是否为字符设备（终端）
+	return (stat.Mode() & os.ModeCharDevice) != 0
 }
 
 // GetShell 返回当前使用的 Shell 信息
