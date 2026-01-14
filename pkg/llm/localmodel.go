@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/studyzy/aicli/pkg/i18n"
 )
 
 // LocalModelProvider 实现了本地 LLM 服务（如 Ollama）的 LLMProvider 接口
@@ -93,14 +95,14 @@ func (p *LocalModelProvider) Translate(ctx context.Context, input string, execCt
 	// 序列化请求体
 	jsonData, err := json.Marshal(reqBody)
 	if err != nil {
-		return "", fmt.Errorf("序列化请求失败: %w", err)
+		return "", fmt.Errorf("%s: %w", i18n.T(i18n.ErrSerializeRequest), err)
 	}
 
 	// 创建 HTTP 请求
 	url := p.baseURL + "/api/chat"
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonData))
 	if err != nil {
-		return "", fmt.Errorf("创建请求失败: %w", err)
+		return "", fmt.Errorf("%s: %w", i18n.T(i18n.ErrCreateRequest), err)
 	}
 
 	// 设置请求头
@@ -109,14 +111,14 @@ func (p *LocalModelProvider) Translate(ctx context.Context, input string, execCt
 	// 发送请求
 	resp, err := p.client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("API 请求失败: %w", err)
+		return "", fmt.Errorf("%s: %w", i18n.T(i18n.ErrAPIRequest), err)
 	}
 	defer resp.Body.Close()
 
 	// 读取响应体
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("读取响应失败: %w", err)
+		return "", fmt.Errorf("%s: %w", i18n.T(i18n.ErrReadResponse), err)
 	}
 
 	// 检查 HTTP 状态码
@@ -127,23 +129,23 @@ func (p *LocalModelProvider) Translate(ctx context.Context, input string, execCt
 		if errResp.Error != "" {
 			errMsg = fmt.Sprintf("%s: %s", errMsg, errResp.Error)
 		}
-		return "", fmt.Errorf("API 错误: %s", errMsg)
+		return "", fmt.Errorf("%s: %s", i18n.T(i18n.ErrAPIError), errMsg)
 	}
 
 	// 解析响应
 	var apiResp ollamaResponse
 	if err := json.Unmarshal(body, &apiResp); err != nil {
-		return "", fmt.Errorf("解析响应失败: %w", err)
+		return "", fmt.Errorf("%s: %w", i18n.T(i18n.ErrParseResponse), err)
 	}
 
 	// 验证响应
 	if apiResp.Message == nil {
-		return "", fmt.Errorf("API 返回空响应")
+		return "", fmt.Errorf("%s", i18n.T(i18n.ErrEmptyResponse))
 	}
 
 	command := strings.TrimSpace(apiResp.Message.Content)
 	if command == "" {
-		return "", fmt.Errorf("API 返回空命令")
+		return "", fmt.Errorf("%s", i18n.T(i18n.ErrEmptyCommandResp))
 	}
 
 	// 清理命令（移除可能的 markdown 代码块标记）

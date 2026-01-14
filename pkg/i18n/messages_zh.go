@@ -18,6 +18,16 @@ var messagesZh = map[string]string{
 	ErrHistoryNotFound: "历史记录不存在",
 	ErrReadStdin:       "读取 stdin 失败",
 	ErrSaveConfig:      "保存配置失败",
+	// LLM Provider 内部错误
+	ErrInputEmpty:       "输入不能为空",
+	ErrSerializeRequest: "序列化请求失败",
+	ErrCreateRequest:    "创建请求失败",
+	ErrAPIRequest:       "API 请求失败",
+	ErrReadResponse:     "读取响应失败",
+	ErrParseResponse:    "解析响应失败",
+	ErrAPIError:         "API 错误",
+	ErrEmptyResponse:    "API 返回空响应",
+	ErrEmptyCommandResp: "API 返回空命令",
 
 	// 提示信息
 	PromptConfirmRisky:    "是否继续执行?(y/n): ",

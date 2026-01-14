@@ -19,6 +19,16 @@ const (
 	ErrHistoryNotFound = "error.history_not_found"
 	ErrReadStdin       = "error.read_stdin"
 	ErrSaveConfig      = "error.save_config"
+	// LLM Provider 内部错误
+	ErrInputEmpty       = "error.input_empty"
+	ErrSerializeRequest = "error.serialize_request"
+	ErrCreateRequest    = "error.create_request"
+	ErrAPIRequest       = "error.api_request"
+	ErrReadResponse     = "error.read_response"
+	ErrParseResponse    = "error.parse_response"
+	ErrAPIError         = "error.api_error"
+	ErrEmptyResponse    = "error.empty_response"
+	ErrEmptyCommandResp = "error.empty_command_resp"
 )
 
 // 提示信息键

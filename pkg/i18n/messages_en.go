@@ -18,6 +18,16 @@ var messagesEn = map[string]string{
 	ErrHistoryNotFound: "History record not found",
 	ErrReadStdin:       "Failed to read stdin",
 	ErrSaveConfig:      "Failed to save configuration",
+	// LLM Provider internal errors
+	ErrInputEmpty:       "Input cannot be empty",
+	ErrSerializeRequest: "Failed to serialize request",
+	ErrCreateRequest:    "Failed to create request",
+	ErrAPIRequest:       "API request failed",
+	ErrReadResponse:     "Failed to read response",
+	ErrParseResponse:    "Failed to parse response",
+	ErrAPIError:         "API error",
+	ErrEmptyResponse:    "API returned empty response",
+	ErrEmptyCommandResp: "API returned empty command",
 
 	// Prompts
 	PromptConfirmRisky:    "Continue execution? (y/n): ",

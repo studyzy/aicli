@@ -48,17 +48,10 @@ func main() {
 
 // rootCmd 是根命令
 var rootCmd = &cobra.Command{
-	Use:   "aicli [自然语言描述]",
-	Short: "AI 命令行助手",
-	Long: `aicli 是一个让命令行支持自然语言操作的工具。
-用户只需要输入自然语言，就能通过 LLM 服务将其转换为实际的命令并执行。
-
-示例:
-  aicli "查找log.txt中的ERROR日志"
-  aicli "显示当前目录下所有txt文件"
-  cat file.txt | aicli "统计行数"
-  aicli --history
-  aicli --retry 3`,
+	Use:   "aicli [args]",  // 使用中性的占位符，将在 updateCommandDescriptions 中更新
+	Short: "AI CLI Assistant",
+	Long: `aicli is a tool that brings natural language operations to the command line.
+Users can simply enter natural language, and it will be converted into actual commands through LLM services and executed.`,
 	Version:               version,
 	RunE:                  run,
 	Args:                  cobra.ArbitraryArgs,
@@ -323,7 +316,11 @@ func retryCommand(id int) error {
 
 // updateCommandDescriptions 更新命令描述为对应语言
 func updateCommandDescriptions(cmd *cobra.Command) {
-	// 更新根命令描述（不更新 Use，因为会导致 Cobra 把它当成子命令）
+	// 更新根命令描述（包括 Use 字段）
+	// 通过检查命令名称来判断是否为根命令，避免初始化循环
+	if cmd.Name() == "aicli" && cmd.Parent() == nil {
+		cmd.Use = i18n.T(i18n.CobraUse)
+	}
 	cmd.Short = i18n.T(i18n.CobraShort)
 	cmd.Long = i18n.T(i18n.CobraLong)
 	
