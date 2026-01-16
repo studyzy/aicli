@@ -72,7 +72,7 @@ func detectUnixShell(shellPath string) (*ShellAdapter, error) {
 		return &ShellAdapter{
 			Type: ShellZsh,
 			Path: shellPath,
-			Args: []string{"-c"},
+			Args: []string{"-i", "-c"},
 		}, nil
 	}
 
@@ -80,7 +80,7 @@ func detectUnixShell(shellPath string) (*ShellAdapter, error) {
 		return &ShellAdapter{
 			Type: ShellBash,
 			Path: shellPath,
-			Args: []string{"-c"},
+			Args: []string{"-i", "-c"},
 		}, nil
 	}
 
@@ -108,10 +108,15 @@ func detectUnixShellDefault() (*ShellAdapter, error) {
 
 	for _, shell := range shells {
 		if _, err := os.Stat(shell.path); err == nil {
+			args := []string{"-c"}
+			// zsh 和 bash 使用交互模式以加载配置文件(如别名)
+			if shell.shellType == ShellZsh || shell.shellType == ShellBash {
+				args = []string{"-i", "-c"}
+			}
 			return &ShellAdapter{
 				Type: shell.shellType,
 				Path: shell.path,
-				Args: []string{"-c"},
+				Args: args,
 			}, nil
 		}
 	}

@@ -158,9 +158,15 @@ func TestDetectShellCrossPlatform(t *testing.T) {
 
 	// 验证参数格式
 	switch shell.Type {
-	case ShellBash, ShellZsh, ShellSh:
+	case ShellBash, ShellZsh:
+		// Bash 和 Zsh 使用交互模式以加载配置文件(如别名)
+		if len(shell.Args) != 2 || shell.Args[0] != "-i" || shell.Args[1] != "-c" {
+			t.Errorf("Bash/Zsh 参数应为 ['-i', '-c'], 实际为 %v", shell.Args)
+		}
+	case ShellSh:
+		// sh 不使用交互模式
 		if len(shell.Args) != 1 || shell.Args[0] != "-c" {
-			t.Errorf("Unix Shell 参数应为 ['-c'], 实际为 %v", shell.Args)
+			t.Errorf("sh 参数应为 ['-c'], 实际为 %v", shell.Args)
 		}
 	case ShellPowerShell:
 		if len(shell.Args) < 2 {
