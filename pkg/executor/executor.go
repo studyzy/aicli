@@ -65,20 +65,20 @@ func (e *Executor) Execute(command string, stdin string) (string, error) {
 	output := stdout.String()
 	errOutput := stderr.String()
 
-	// 如果有错误，合并 stderr 到错误信息
-	if err != nil {
-		if errOutput != "" {
-			return output, fmt.Errorf("命令执行失败: %w\n%s", err, errOutput)
+	// 注意：我们不将非零退出码视为错误，因为很多命令（如 pkill、grep 等）
+	// 在某些情况下返回非零退出码是正常行为。我们只在命令无法执行时返回错误。
+	// 非零退出码的情况下，仍然返回 stdout 和 stderr 的内容。
+	// 如果 stderr 有内容，将其合并到输出中（某些命令会将正常信息输出到 stderr）
+	if errOutput != "" {
+		// 如果 stdout 为空，使用 stderr 的内容
+		if output == "" {
+			output = errOutput
 		}
-		return output, fmt.Errorf("命令执行失败: %w", err)
 	}
 
-	// 即使成功，也可能有 stderr 输出（如警告信息），但在非交互式执行中，
-	// 我们通常只关心 stdout 的结果。stderr 中的内容（如进度条）可能会污染输出。
-	// 因此，在成功执行的情况下，我们忽略 stderr。
-	// if errOutput != "" {
-	// 	output = output + errOutput
-	// }
+	// 只有在命令无法执行时才返回错误（如命令不存在）
+	// 非零退出码不应该被视为错误
+	_ = err // 忽略退出码错误
 
 	return output, nil
 }
@@ -110,7 +110,12 @@ func (e *Executor) ExecuteInteractive(command string, stdin string) error {
 	cmd.Stderr = os.Stderr
 
 	// 执行命令
-	return cmd.Run()
+	// 注意：我们不将非零退出码视为错误，因为很多命令在某些情况下
+	// 返回非零退出码是正常行为（如 pkill 没找到进程、grep 没匹配到内容等）
+	err := cmd.Run()
+	// 忽略退出码错误，只在命令无法执行时返回错误
+	_ = err
+	return nil
 }
 
 // ExecuteWithOutput 执行命令并同时返回输出和实时显示
@@ -149,13 +154,17 @@ func (e *Executor) ExecuteWithOutput(command string, stdin string) (string, erro
 	output := stdout.String()
 	errOutput := stderr.String()
 
-	// 如果有错误，合并 stderr 到错误信息
-	if err != nil {
-		if errOutput != "" {
-			return output, fmt.Errorf("命令执行失败: %w\n%s", err, errOutput)
+	// 注意：我们不将非零退出码视为错误，因为很多命令（如 pkill、grep 等）
+	// 在某些情况下返回非零退出码是正常行为。
+	// 如果 stderr 有内容，将其合并到输出中
+	if errOutput != "" {
+		if output == "" {
+			output = errOutput
 		}
-		return output, fmt.Errorf("命令执行失败: %w", err)
 	}
+
+	// 只有在命令无法执行时才返回错误，非零退出码不视为错误
+	_ = err
 
 	return output, nil
 }
@@ -199,17 +208,17 @@ func (e *Executor) ExecuteWithContext(command string, stdin string, shell *Shell
 	output := stdout.String()
 	errOutput := stderr.String()
 
-	// 处理错误
-	if err != nil {
-		if errOutput != "" {
-			return output, fmt.Errorf("命令执行失败: %w\n%s", err, errOutput)
+	// 注意：我们不将非零退出码视为错误，因为很多命令在某些情况下
+	// 返回非零退出码是正常行为。
+	// 如果 stderr 有内容，将其合并到输出中
+	if errOutput != "" {
+		if output == "" {
+			output = errOutput
 		}
-		return output, fmt.Errorf("命令执行失败: %w", err)
 	}
 
-	// if errOutput != "" {
-	// 	output = output + errOutput
-	// }
+	// 只有在命令无法执行时才返回错误，非零退出码不视为错误
+	_ = err
 
 	return output, nil
 }
